@@ -53,9 +53,15 @@
 				}
 			}
 			
+			private function applyEffect(event:Event):void {
+				moveEffect.target = formSubscription;
+				moveEffect.play();
+			}
+			
 		]]>
 	</mx:Script>
-	<mx:Canvas width="598" height="430" color="#FFFFFF">
+	<mx:Move id="moveEffect" xFrom="-100"/>
+	<mx:Canvas width="598" height="430" color="#FFFFFF" id="formSubscription" creationComplete="applyEffect(event)">
 		<mx:Form width="517" height="420" fontFamily="Arial" textAlign="left">
 			<mx:FormHeading width="303" label="Inscrivez vous" fontSize="15" fontStyle="normal"
 							textDecoration="none" paddingTop="10"/>

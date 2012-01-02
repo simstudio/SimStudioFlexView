@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="818" height="706"
+		 xmlns:view="com.simstudio.view.*"
+		 initialize="onLoad()">
+	<fx:Declarations>
+		<mx:Move id="accountMove" target="{accountActive}"/>
+		<mx:Move id="collaboratorMove" target="{collaboratorActive}"/>
+		<mx:Move id="groupsMove" target="{groupsActive}"/>
+		<mx:Move id="filesMove" target="{filesActive}"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.filters.ColorMatrixFilter;
+			
+			import mx.controls.Alert;
+			
+			private function onLoad():void{
+				this["accountActive"].filters = [this.getColorFilter()];
+				collaboratorActive.filters = [this.getColorFilter()];
+				filesActive.filters = [this.getColorFilter()];
+				groupsActive.filters = [this.getColorFilter()];
+			}
+			
+			private function getColorFilter():ColorMatrixFilter{
+				var matrixArray:Array =[ .33,.33,.33,0,0,
+					.33,.33,.33,0,0,
+					.33,.33,.33,0,0,
+					0,0,0,1,0];    
+				return new ColorMatrixFilter(matrixArray);
+			}
+			
+			private function showMenu(id:String, moveId:String):void{
+				this[id].filters = [];
+				this[moveId].end();
+				this[moveId].duration = 100;
+				this[moveId].xTo=40;
+				this[moveId].play();
+			}
+			
+			private function hideMenu(id:String, moveId:String):void{
+
+				this[moveId].end();
+				this[moveId].duration = 100;
+				this[moveId].xTo=145;
+				this[moveId].play();
+				this[id].filters = [this.getColorFilter()];
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<s:states> 
+		<s:State name="account"/> 
+		<s:State name="collaborator"/> 
+		<s:State name="groups"/> 
+		<s:State name="files"/> 
+	</s:states> 
+	<!-- Profiles -->
+	<s:Image x="-87" y="386" source="@Embed(source='assets/account_logo_background.png')"/>
+	
+	<s:Image id="accountActive" x="145" y="96" useHandCursor="true" buttonMode="true" source="@Embed(source='assets/account_icone_profil_on.png')"
+			 rollOut="hideMenu('accountActive', 'accountMove')" rollOver="showMenu('accountActive', 'accountMove')" click="currentState='account'"/>
+	
+	<!-- Collaborator -->
+	<s:Image id="collaboratorActive" x="145" y="238" useHandCursor="true" buttonMode="true" source="@Embed(source='assets/account_icone_collaborateurs_on.png')" 
+			 rollOut="hideMenu('collaboratorActive', 'collaboratorMove')" rollOver="showMenu('collaboratorActive', 'collaboratorMove')" click="currentState='collaborator'"/>
+
+	
+	<!-- Groups -->
+	<s:Image id="groupsActive" x="145" y="309" useHandCursor="true" buttonMode="true" source="@Embed(source='assets/account_icone_groupes_on.png')" 
+			 rollOut="hideMenu('groupsActive', 'groupsMove')" rollOver="showMenu('groupsActive', 'groupsMove')" click="currentState='groups'"/>
+
+	
+	<!-- Files -->
+	<s:Image id="filesActive" x="145" y="167" useHandCursor="true" buttonMode="true" source="@Embed(source='assets/account_icone_fichiers_on.png')" 
+			 rollOut="hideMenu('filesActive', 'filesMove')" rollOver="showMenu('filesActive', 'filesMove')" click="currentState='files'"/>	
+
+	<s:Image x="218" y="96" width="152" height="276" scaleMode="stretch"
+			 source="@Embed(source='assets/account_background_masque.png')"/>
+	<s:Image x="218" y="57" source="@Embed(source='assets/account_pointilles.png')"/>
+	
+	<s:VGroup x="268" y="41" width="446" height="543">
+		<view:Files id="listConsultants" width="1265" height="709" includeIn="account"/>
+	</s:VGroup>
+</s:Group>
