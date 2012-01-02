@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				width="610" height="506" close="closeHandler(event)" fontFamily="lucida"
+				showCloseButton="true" textAlign="right">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+			
+			private var imgValid:String = "assets/valid.png";
+			private var imgError:String = "assets/error.png";
+			
+			private function closeHandler(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function validateEmail(email:String):Boolean 
+			{
+				var pattern:RegExp = /(\w|[_.\-])+@((\w|-)+\.)+\w{2,4}+/;
+				var result:Object = pattern.exec(email);
+				if(!result)
+					return false;
+				return true;
+			}
+			
+			
+			protected function checkEmail(event:Event):void
+			{
+				if (this.validateEmail(inputEmail.text)) {
+					img_email.load(imgValid);
+				}
+				else if (inputEmail.text == ''){
+					//@todo refactored
+					img_email.removeChild(img_email);
+					Alert.show('tylklfg');
+				}
+				else {
+					img_email.load(imgError);
+				}
+			}
+			
+			protected function checkPassword(event:Event):void
+			{
+				if (inputPassword.text == inputPasswordRepeated.text) {
+					img_password.load(imgValid);
+					img_password_repeated.load(imgValid);
+				}
+				else {
+					img_password.load(imgError);
+					img_password_repeated.load(imgError);
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Canvas width="598" height="430" color="#FFFFFF">
+		<mx:Form width="517" height="420" fontFamily="Arial" textAlign="left">
+			<mx:FormHeading width="303" label="Inscrivez vous" fontSize="15" fontStyle="normal"
+							textDecoration="none" paddingTop="10"/>
+			<mx:FormItem label="Email" color="#FFFFFF" fontWeight="bold" paddingLeft="60"
+						 paddingTop="25" textAlign="left">
+				<mx:TextInput id="inputEmail" width="294" height="30"
+							  focusOut="checkEmail(event)" dropShadowVisible="true"
+							  fontSize="15"/>
+			</mx:FormItem>
+			<mx:FormItem label="Firstname" fontWeight="bold" paddingLeft="60"
+						 paddingTop="15">
+				<mx:TextInput id="inputFirstname" width="294" height="30" fontFamily="Arial"
+							  fontSize="15"/>
+			</mx:FormItem>
+			<mx:FormItem label="Lastname" fontWeight="bold" paddingLeft="60">
+				<mx:TextInput id="inputLastname" width="294" height="30" fontFamily="Arial"
+							  fontSize="15"/>
+			</mx:FormItem>
+			<mx:FormItem label="Password" fontWeight="bold" paddingLeft="60" paddingTop="15">
+				<mx:TextInput id="inputPassword" width="294" height="30" displayAsPassword="true"
+							  fontFamily="Arial" fontSize="15"/>
+			</mx:FormItem>
+			<mx:FormItem label="Password again" dropShadowVisible="false" fontWeight="bold"
+						 paddingLeft="60" textAlign="left">
+				<mx:TextInput id="inputPasswordRepeated" width="294" height="30" focusOut="checkPassword(event)"
+							  displayAsPassword="true" fontFamily="Arial" fontSize="15"/>
+			</mx:FormItem>
+			<mx:FormItem width="464" height="95" textAlign="center" paddingLeft="100" paddingTop="40">
+				<mx:Button width="112" height="45" label="Valider" chromeColor="#FF9C00" color="#FFFFFF"
+						   enabled="true" focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Image x="525" y="92"  id="img_email"/>
+		<mx:Image x="525" y="266" id="img_password"/>
+		<mx:Image x="525" y="228" id="img_password_repeated"/>
+
+	</mx:Canvas>
+	
+</mx:TitleWindow>

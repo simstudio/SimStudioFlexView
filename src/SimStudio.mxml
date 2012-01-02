@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!-- menus/MenuBarControl.mxml -->
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" >
+	<fx:Style source="SimStudio.css"/>
+
+	<fx:Script>
+		<![CDATA[
+			import mx.containers.TitleWindow;
+			import mx.controls.Alert;
+			import mx.controls.Label;
+			import mx.controls.Menu;
+			import mx.controls.TextArea;
+			import mx.core.IFlexDisplayObject;
+			import mx.events.MenuEvent;
+			import mx.managers.PopUpManager;
+			
+			import spark.components.TitleWindow;
+
+			// The event listener for the itemClick event.
+			private function myMenuBar_itemClickInfo(event:MenuEvent):void {
+				//ta1.text="event.type: " + event.type;
+				//ta1.text+="\nevent.index: " + event.index;
+				//ta1.text+="\nItem label: " + event.item.@label
+				//ta1.text+="\nItem selected: " + event.item.@toggled;
+				//ta1.text+= "\nItem type: " + event.item.@type;
+				Alert.show("Texte dans une Alert", "Header de la boîte de dialogue");
+			}
+			
+			
+			protected function btnLogin_clickHandler(event:MouseEvent):void
+			{
+				var pop:IFlexDisplayObject = PopUpManager.createPopUp(this, PopupRegistration, true);
+				PopUpManager.centerPopUp(pop);	
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:MenuBar id="myMenuBar" x="1" y="4" width="100%" height="43" fontSize="15" fontWeight="bold"
+				itemClick="myMenuBar_itemClickInfo(event)" labelField="@label">
+		<fx:XMLList>
+			<menuitem label="Account">
+				<menuitem label="Profile"/>
+				<menuitem label="Manage Groups"/>
+				<menuitem label="Manages Models"/>
+			</menuitem>
+		</fx:XMLList>
+	</mx:MenuBar>
+	<s:Button id="btnLogin" y="7" right="10" width="83" height="31" label="Login"
+			  click="btnLogin_clickHandler(event)" fontSize="15" fontWeight="bold"/>
+</s:Application>

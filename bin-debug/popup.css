@@ -1,0 +1,13 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+
+mx|Label
+{
+	fontFamily: Arial, Helvetic, Lucida;
+	fontSize: 55;
+	fontWeight: bold;
+	textAlign: center;
+}
+	
