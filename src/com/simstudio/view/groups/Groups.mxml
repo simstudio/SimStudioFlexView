@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="1254" height="556" initialize="init()">
+	<fx:Declarations>
+		<!-- Placer ici les éléments non visuels (services et objets de valeur, par exemple). -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import flashx.textLayout.formats.BackgroundColor;
+			
+			import mx.containers.Canvas;
+			import mx.controls.Alert;
+			import mx.controls.Button;
+			import mx.controls.Image;
+			import mx.core.UIComponent;
+			
+			import spark.components.Label;
+			
+			
+			private var _newCanvas:Canvas;
+			
+			/**
+			 * the instance of the edit popup showed
+			 */
+			private var _openEditPopUp:Canvas;
+			
+			/**
+			 * the instance of the edit popup showed
+			 */
+			private var _lastOpenedEditButton:Image;
+			
+			private var _imgEditOver:String = "assets/edit_black.png";
+			private var _imgEditOut:String = "assets/edit_white.png";
+			
+			private function init():void{
+				addGroup();
+				addGroup();
+			}
+			
+			private function addGroup():void {
+				
+				var imageEdit:Image = new Image();
+				imageEdit.width=35;
+				imageEdit.height=34;
+				image
+				imageEdit.load(this._imgEditOut);
+				imageEdit.buttonMode=true;
+				imageEdit.addEventListener(MouseEvent.CLICK, OpenEditPopUp);
+				
+				var groupLabel:Label = new Label();
+				groupLabel.text = "SimStudio";
+				groupLabel.setStyle("fontSize", 12);
+				groupLabel.setStyle("fontWeight", "bold");
+				groupLabel.x = 50;
+				groupLabel.y = 13;
+				groupLabel.buttonMode=true;
+				groupLabel.addEventListener(MouseEvent.MOUSE_OVER, HighlightGroupLink);
+				groupLabel.addEventListener(MouseEvent.MOUSE_OUT, DarkenGroupLink);
+				groupLabel.addEventListener(MouseEvent.CLICK, OpenGroup);
+				
+				var lastMessageLabel:Label = new Label();
+				lastMessageLabel.text = "Dernier message le 31 septembre";
+				lastMessageLabel.setStyle("fontSize", 12);
+				lastMessageLabel.setStyle("fontStyle", "italic");
+				lastMessageLabel.x = 500;
+				lastMessageLabel.y = 13;
+					
+				var myCanvas:Canvas = new Canvas();
+				myCanvas.setStyle("marginTop", "5");
+				myCanvas.setStyle("backgroundColor", "#707070");
+
+				myCanvas.setStyle("y", 25);
+				myCanvas.width=720;
+				myCanvas.height=35;
+				myCanvas.id = "Groups1";
+				myCanvas.addChild(imageEdit);
+				myCanvas.addChild(groupLabel);
+				myCanvas.addChild(lastMessageLabel);
+				myCanvas.addEventListener(MouseEvent.MOUSE_OVER, HighlightBackground);
+				myCanvas.addEventListener(MouseEvent.MOUSE_OUT, DarkenBackground);
+				
+				var myHbox:HBox = new HBox();
+				myHbox.width=720;
+				myHbox.height=35;
+				myHbox.addChild(myCanvas);
+				myVbox.addChild(myHbox);
+			}
+			
+			private function HighlightBackground(e:Event):void {
+				var myCanvas:Canvas = e.currentTarget as Canvas;
+				myCanvas.setStyle("backgroundColor", "#989898");
+			}
+			
+			private function DarkenBackground(e:Event):void {
+				var myCanvas:Canvas = e.currentTarget as Canvas;
+				myCanvas.setStyle("backgroundColor", "#707070");
+			}
+			
+			private function OpenGroup(e:Event):void {
+				Alert.show("todo link to the group");
+			}
+			
+			private function HighlightGroupLink(e:Event):void {
+				var link:Label = e.currentTarget as Label;
+				link.setStyle("color", "#333333");
+			}
+			
+			private function DarkenGroupLink(e:Event):void {
+				var link:Label = e.currentTarget as Label;
+				link.setStyle("color", "#ffffff");
+			}
+			
+			/**
+			 * Open the edit popup and close 
+			 */
+			private function OpenEditPopUp(e:Event):void {
+				var editBtn:Image = e.currentTarget as Image;
+				
+				if(_lastOpenedEditButton == null){
+					_lastOpenedEditButton = editBtn;
+				}
+				else {
+					_lastOpenedEditButton.load(_imgEditOut)
+					_lastOpenedEditButton = editBtn;
+				}
+				
+				if(_openEditPopUp == null)
+				{
+					editBtn.load(_imgEditOver);
+					configureEditPopUP(editBtn);
+					this['globalCanvas'].addChild(_openEditPopUp);
+				}
+				else {
+					this['globalCanvas'].removeChild(_openEditPopUp);
+					_openEditPopUp = null;
+					editBtn.load(_imgEditOut);
+				}
+			}
+		
+			/**
+			 * @todo refactored to show admin only when the user is the group admin
+			 * Configure the edit popup with right submenu
+			 */
+			private function configureEditPopUP(editBtn:Image):void {
+				_openEditPopUp = new Canvas();
+				_openEditPopUp.width=130;
+				_openEditPopUp.height=70;
+				_openEditPopUp.setStyle("backgroundColor", "#f0eded");
+				_openEditPopUp.x=5;
+				_openEditPopUp.y=editBtn.parent.parent.y+44;
+				
+				var quitGroupMenu:Label = new Label();
+				quitGroupMenu.width=130;
+				quitGroupMenu.height=25;
+				quitGroupMenu.text="Leave the group";
+				quitGroupMenu.setStyle("textAlign", "center");
+				quitGroupMenu.setStyle("color", "#000000");
+				quitGroupMenu.setStyle("fontWeight", "bold");
+				quitGroupMenu.setStyle("verticalAlign", "middle");
+				quitGroupMenu.y=10;
+				quitGroupMenu.buttonMode=true;
+				quitGroupMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
+				quitGroupMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
+				quitGroupMenu.addEventListener(MouseEvent.CLICK, leaveGroup);
+				
+				var adminGroupMenu:Label = new Label();
+				adminGroupMenu.width=130;
+				adminGroupMenu.height=25;
+				adminGroupMenu.text="Admin the group";
+				adminGroupMenu.setStyle("textAlign", "center");
+				adminGroupMenu.setStyle("color", "#000000");
+				adminGroupMenu.setStyle("fontWeight", "bold");
+				adminGroupMenu.setStyle("verticalAlign", "middle");
+				adminGroupMenu.y=35;
+				adminGroupMenu.buttonMode=true;
+				adminGroupMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
+				adminGroupMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
+				adminGroupMenu.addEventListener(MouseEvent.CLICK, leaveGroup);
+				
+				_openEditPopUp.addChild(quitGroupMenu);
+				_openEditPopUp.addChild(adminGroupMenu);
+			}
+			
+			private function HighlightMenuLabelBackground(e:Event):void {
+				var link:Label = e.currentTarget as spark.components.Label;
+				link.setStyle("backgroundColor", "#f09620");
+				link.setStyle("color", "#ffffff");
+			}
+			
+			private function leaveGroup(e:Event):void {
+				Alert.show("Todo implement leave group action");
+			}
+			
+			/**
+			 * Remove highlight on the popup menu on mouse over
+			 */
+			private function DarkenMenuLabelBackground(e:Event):void {
+				var link:Label = e.currentTarget as Label;
+				link.setStyle("backgroundColor", "#f0eded");
+				link.setStyle("color", "#000000");
+			}
+		]]>
+	</fx:Script>
+	<mx:Canvas id="globalCanvas">
+	<mx:VBox id="myVbox" x="5" y="10" width="720" height="700" verticalAlign="top" direction="vertical" maxWidth="720" />
+	<mx:HBox id="myHbox" x="5" y="10" width="1214" height="700" verticalAlign="top" direction="vertical" maxWidth="720" />
+
+	</mx:Canvas>
+</s:Group>

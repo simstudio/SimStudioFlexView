@@ -43,7 +43,6 @@
 			{
 				var pop:IFlexDisplayObject = PopUpManager.createPopUp(this, com.simstudio.popup.PopupRegistration, true);
 				PopUpManager.centerPopUp(pop);
-				
 			}
 			
 		]]>

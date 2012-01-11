@@ -41,28 +41,33 @@
 			}
 			
 			private function hideMenu(id:String, moveId:String):void{
-
 				this[moveId].end();
 				this[moveId].duration = 100;
 				this[moveId].xTo=145;
 				this[moveId].play();
 				this[id].filters = [this.getColorFilter()];
-				
+			}
+			
+			private function click(e:Event, state:String):void {
+				currentState=state;
+				var myImage:Image = e.currentTarget as Image;
+				myImage.removeEventListener(MouseEvent.ROLL_OUT, hideMenu);
+				myImage.removeEventListener(MouseEvent.ROLL_OVER, showMenu);
 			}
 			
 		]]>
 	</fx:Script>
 	<s:states> 
-		<s:State name="account"/> 
+		<s:State name="informations"/> 
 		<s:State name="collaborator"/> 
 		<s:State name="groups"/> 
 		<s:State name="files"/> 
-	</s:states> 
+	</s:states>
 	<!-- Profiles -->
 	<s:Image x="-87" y="386" source="@Embed(source='assets/account_logo_background.png')"/>
 	
 	<s:Image id="accountActive" x="145" y="96" useHandCursor="true" buttonMode="true" source="@Embed(source='assets/account_icone_profil_on.png')"
-			 rollOut="hideMenu('accountActive', 'accountMove')" rollOver="showMenu('accountActive', 'accountMove')" click="currentState='account'"/>
+			 rollOut="hideMenu('accountActive', 'accountMove')" rollOver="showMenu('accountActive', 'accountMove')" click="click(event, 'informations')"/>
 	
 	<!-- Collaborator -->
 	<s:Image id="collaboratorActive" x="145" y="238" useHandCursor="true" buttonMode="true" source="@Embed(source='assets/account_icone_collaborateurs_on.png')" 
@@ -82,7 +87,9 @@
 			 source="@Embed(source='assets/account_background_masque.png')"/>
 	<s:Image x="218" y="57" source="@Embed(source='assets/account_pointilles.png')"/>
 	
-	<s:VGroup x="268" y="41" width="446" height="543">
-		<view:Files id="listConsultants" width="1265" height="709" includeIn="account"/>
+	<s:VGroup x="268" y="41" width="700" height="543" paddingTop="30">
+		<view:Informations id="Informationsview" width="1265" height="709" includeIn="informations"/>
+		<view:Files id="FilesView" width="1265" height="709" includeIn="files"/>
+		<view:Groups id="GroupsView" width="1265" height="709" includeIn="groups"/>
 	</s:VGroup>
 </s:Group>

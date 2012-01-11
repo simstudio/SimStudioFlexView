@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				width="502" height="296" close="closeHandler(event)" fontFamily="Arial"
+				showCloseButton="true" textAlign="right">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+			
+			private function closeHandler(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function applyEffect(event:Event):void 
+			{
+				moveEffect.target = formLogin;
+				moveEffect.play();
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Move id="moveEffect" xFrom="-100"/>
+	
+	<mx:Form id="formLogin" width="483" height="247" textAlign="right" creationComplete="applyEffect(event)">
+		<mx:FormItem width="450" label="Email" color="#FFFFFF" fontWeight="bold" paddingLeft="60"
+					 paddingTop="25" textAlign="left">
+			<mx:TextInput id="inputEmail" width="282" height="30"
+						  dropShadowVisible="true"
+						  fontSize="15"/>
+		</mx:FormItem>
+		<mx:FormItem width="451" label="Password" fontWeight="bold" paddingLeft="60" paddingTop="15">
+			<mx:TextInput id="inputPassword" width="281" height="30" displayAsPassword="true"
+						  fontFamily="Arial" fontSize="15"/>
+		</mx:FormItem>
+		<mx:FormItem width="449" height="65" textAlign="center" paddingLeft="100" paddingTop="15">
+			<mx:Button width="112" height="45" label="Valider" chromeColor="#FF9C00" color="#FFFFFF"
+					   enabled="true" focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+</mx:TitleWindow>

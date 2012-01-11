@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="714" height="650">
+	<fx:Declarations>
+		<!-- Placer ici les éléments non visuels (services et objets de valeur, par exemple). -->
+	</fx:Declarations>
+	<mx:Form id="formLogin" width="572" height="569" textAlign="right">
+		<s:Label fontFamily="Arial" fontSize="15" fontWeight="bold" text="Personnal informations"/>
+		<mx:FormItem width="491" label="Firstname" paddingLeft="60" paddingTop="15" textAlign="left">
+			<mx:TextInput id="inputPassword" width="281" height="30"
+						  fontFamily="Arial" fontSize="15"/>
+		</mx:FormItem>
+		<mx:FormItem width="494" label="Lastname" paddingLeft="60" paddingTop="15" textAlign="left">
+			<mx:TextInput id="inputPassword0" width="281" height="30" displayAsPassword="true"
+						  fontFamily="Arial" fontSize="15"/>
+		</mx:FormItem>
+		<s:Label fontFamily="Arial" fontSize="15" fontWeight="bold" text="Security informations"
+				 textAlign="left" paddingTop="25"/>
+		<s:Label fontFamily="Arial" fontSize="12" text="Edit your password" paddingLeft="20" paddingTop="15" fontWeight="bold"/>
+		<mx:FormItem width="494" label="Old password"  paddingLeft="60" paddingTop="15" textAlign="left">
+			<mx:TextInput id="inputPassword1" width="281" height="30" displayAsPassword="true"
+						  fontFamily="Arial" fontSize="15"/>
+		</mx:FormItem>
+		<mx:FormItem width="494" label="New password" paddingLeft="60" paddingTop="15" textAlign="left">
+			<mx:TextInput id="inputPassword2" width="281" height="30" displayAsPassword="true"
+						  fontFamily="Arial" fontSize="15"/>
+		</mx:FormItem>
+		<mx:FormItem width="494" label="Repeat password" paddingLeft="60" paddingTop="15" textAlign="left">
+			<mx:TextInput id="inputPassword3" width="281" height="30" displayAsPassword="true"
+						  fontFamily="Arial" fontSize="15"/>
+		</mx:FormItem>
+		<s:Label fontFamily="Arial" fontSize="12" fontWeight="bold" text="Edit your email" paddingLeft="20" paddingTop="15"/>
+		<mx:FormItem width="491" label="Email" color="#FFFFFF" paddingLeft="60"
+					 paddingTop="15" textAlign="left">
+			<mx:TextInput id="inputEmail" width="282" height="30"
+						  dropShadowVisible="true"
+						  fontSize="15"/>
+		</mx:FormItem>
+		<mx:FormItem width="449" height="65" textAlign="center" paddingLeft="100" paddingTop="15">
+			<mx:Button width="112" height="45" label="Valider" chromeColor="#FF9C00" color="#FFFFFF"
+					   enabled="true" focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>
+		</mx:FormItem>
+	</mx:Form>
+</s:Group>
