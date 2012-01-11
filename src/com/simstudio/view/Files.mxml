@@ -9,10 +9,15 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import com.simstudio.popup.PopupLogin;
+			import com.simstudio.popup.PopupShareFile;
+			
 			import mx.containers.Canvas;
 			import mx.containers.HBox;
 			import mx.controls.Alert;
 			import mx.controls.Image;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
 			
 			import spark.components.Label;
 			import spark.formatters.NumberFormatter;
@@ -212,7 +217,7 @@
 				shareFileMenu.buttonMode=true;
 				shareFileMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
 				shareFileMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
-				shareFileMenu.addEventListener(MouseEvent.CLICK, leaveGroup);
+				shareFileMenu.addEventListener(MouseEvent.CLICK, btnShare_clickHandler);
 				
 				var deleteFileMenu:spark.components.Label = new spark.components.Label();
 				deleteFileMenu.width=130;
@@ -281,6 +286,13 @@
 				Alert.show("Todo implement leave group action");
 			}
 			
+			protected function btnShare_clickHandler(event:MouseEvent):void
+			{
+				var pop:IFlexDisplayObject = PopUpManager.createPopUp(this, PopupShareFile, true);
+				PopUpManager.centerPopUp(pop);
+				
+			}
+			
 		]]>
 	</fx:Script>
 	<mx:Canvas id="globalCanvas" x="1" y="52">
@@ -290,7 +302,7 @@
 	<mx:Button id="btnUpload" x="6" y="13" width="107" height="30" label="Upload file"
 			   click="browseAndUpload();" color="#FFFFFF" fontSize="15" fontWeight="bold"
 			   textRollOverColor="#ffb400"/>
-	<mx:Label id="message" x="312" y="17"/>
-	<mx:ProgressBar id="progressBar" visible="false" x="130" y="12" indeterminate="true"/>
+	<mx:Label id="message" x="203" y="23"/>
+	<mx:ProgressBar id="progressBar" visible="false" x="130" y="13" indeterminate="true"/>
 	
 </s:Group>
