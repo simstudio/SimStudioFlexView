@@ -74,26 +74,6 @@
 				progressBar.visible = false;
 			}
 			
-			import mx.collections.ArrayCollection;
-			[Bindable] private var mesDonnees_AC:ArrayCollection = new ArrayCollection([
-				{Type:"Voiture", Marque:"Renault", 
-					Couleur:"Rouge", activation:true, prix:80000}, 
-				{Type:"Voiture", Marque:"Renault", 
-					Couleur:"Vert", activation:false, prix:35000},  
-				{Type:"Voiture", Marque:"Peugeot", 
-					Couleur:"Jaune", activation:false, prix:22300},  
-				{Type:"Voiture", Marque:"Citroen", 
-					Couleur:"Orange", activation:false, prix:20000},  
-				{Type:"Moto", Marque:"Honda", 
-					Couleur:"Rouge", activation:false, prix:20000}, 
-				{Type:"Moto", Marque:"Honda", 
-					Couleur:"Rouge", activation:false, prix:30000},  
-				{Type:"Moto", Marque:"Yamaha", 
-					Couleur:"Rouge", activation:true, prix:3000},  
-				{Type:"Moto", Marque:"Yamaha", 
-					Couleur:"Rouge", activation:false, prix:1200} ]);
-			
-			
 			private function addGroup():void {
 				
 				var imageEdit:Image = new Image();

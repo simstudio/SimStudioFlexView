@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="770" height="594">
+	<fx:Declarations>
+		<!-- Placer ici les éléments non visuels (services et objets de valeur, par exemple). -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.simstudio.popup.PopupSearchCollaborator;
+			
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+			
+			protected function btnFindCollaborator_clickHandler(event:MouseEvent):void
+			{
+				var pop:IFlexDisplayObject = PopUpManager.createPopUp(this, PopupSearchCollaborator, true);
+				PopUpManager.centerPopUp(pop);
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<mx:Button id="btnUpload" x="31" y="31" width="171" height="30" label="Find collaborators"
+			   color="#FFFFFF" fontSize="15" fontWeight="bold"
+			   textRollOverColor="#ffb400" click="btnFindCollaborator_clickHandler(event)"/>
+</s:Group>

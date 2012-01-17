@@ -3,7 +3,7 @@
 				xmlns:s="library://ns.adobe.com/flex/spark"
 				width="612" height="608" close="closeHandler(event)" fontFamily="Arial"
 				horizontalAlign="left" initialize="init()" showCloseButton="true" textAlign="left"
-				title="Share a file with a collaborator or a group">
+				title="Find collaborators">
 	<mx:Script>
 		<![CDATA[
 			import mx.containers.HBox;
@@ -29,37 +29,6 @@
 				addGroup('Fabien POMEROL (fabpom)','Ajouter collaborateur');
 				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
 				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				
 			}
 			
 			private function addGroup(fileName:String, buttonName:String):void {
@@ -67,11 +36,8 @@
 				var groupLabel:Label = new Label();
 				groupLabel.text = fileName;
 				groupLabel.setStyle("fontSize", 12);
-				groupLabel.setStyle("fontWeight", "bold");
 				groupLabel.x = 25;
 				groupLabel.y = 5;
-				
-
 				
 				var myCanvas:Canvas = new Canvas();
 				myCanvas.setStyle("marginTop", "5");
@@ -132,30 +98,36 @@
 				iconSearch.source = "assets/search_icon.png";
 			}
 			
+			private function removeInputSearchExample(e:Event):void {
+				var searchInput:TextInput = e.currentTarget as TextInput;
+				searchInput.text = "";
+				searchInput.setStyle("color", "black");
+				searchInput.setStyle("fontStyle", "normal");
+			}
+			
+			private function addInputSearchExample(e:Event):void {
+				var searchInput:TextInput = e.currentTarget as TextInput;
+				searchInput.text = "Ex : John, john@gmail.com";
+				searchInput.setStyle("color", "#949494");
+				searchInput.setStyle("fontStyle", "italic");
+			}
+			
+			
+			
 		]]>
 	</mx:Script>
-	
-
-	
-
 
 	<mx:Canvas id="searchCanvas" width="602" height="141" maxWidth="720" backgroundColor="#484848">
 
-		<mx:TextInput x="67" y="61" width="230" height="28" borderVisible="true" color="#000000"
+		<mx:TextInput x="67" y="61" width="396" height="28" borderVisible="true" color="#949494"
 					  contentBackgroundColor="#FFFFFF" dropShadowVisible="false" fontSize="13"
-					  paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4"
-					  textAlign="left"/>
-		<mx:Label x="67" y="28" fontSize="16" fontWeight="bold" text="Search a collaborator or a group to share"/>
-		<mx:ComboBox x="296" y="61" width="156" height="28"
-					 fontSize="13" fontWeight="bold" textAlign="center" change="comboboxChange(event)">
-			<mx:ArrayCollection>
-				<mx:String>Collaborateur</mx:String>
-				<mx:String>Groupe</mx:String>
-			</mx:ArrayCollection>
-		</mx:ComboBox>
-		<mx:Image id="searchIcon" x="491" y="61" source="@Embed(source='assets/search_icon.png')" buttonMode="true" mouseOver="rollOverSearchIcon(event)" mouseOut="rollOutSearchIcon(event)"/>
+					  fontStyle="italic" fontWeight="normal" paddingBottom="0" paddingLeft="4"
+					  paddingRight="4" paddingTop="4" text="Ex : John, john@gmail.com"
+					  textAlign="left" focusIn="removeInputSearchExample(event)" focusOut="addInputSearchExample(event)"/>
+		<mx:Label x="67" y="28" fontSize="16" fontWeight="bold" text="Search"/>
 		
 		<mx:Image source="@Embed(source='assets/separator_popup.png')" y="140"/>
+		<mx:Button buttonMode="true" x="491" y="61" upSkin="@Embed(source='assets/search_icon.png')" overSkin="@Embed(source='assets/search_icon.png')" downSkin="@Embed(source='assets/search_icon_reverse.png')"/>
 	</mx:Canvas>
 	<mx:VBox id="myVbox" x="5" y="10" width="600" height="413" maxWidth="720" direction="vertical"
 			 paddingTop="10" verticalAlign="top">

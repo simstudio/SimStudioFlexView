@@ -9,6 +9,7 @@
 	<fx:Script>
 		<![CDATA[
 			import com.simstudio.popup.PopupLogin;
+			import com.simstudio.popup.PopupSearch;
 			
 			import mx.containers.TitleWindow;
 			import mx.controls.Alert;
@@ -45,6 +46,12 @@
 				PopUpManager.centerPopUp(pop);
 			}
 			
+			protected function btnSearch_clickHandler(event:MouseEvent):void
+			{
+				var pop:IFlexDisplayObject = PopUpManager.createPopUp(this, com.simstudio.popup.PopupSearch, true);
+				PopUpManager.centerPopUp(pop);
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Style source="SimStudio.css"/>
@@ -60,8 +67,10 @@
 	</mx:MenuBar>
 	<s:Button id="btnLogin" y="11" right="10" width="83" height="31" label="Login"
 			  click="btnLogin_clickHandler(event)" fontSize="14" fontWeight="bold"/>
-	<s:Button id="btnLogin0" y="11" right="101" width="105" height="31" label="Inscription"
+	<s:Button id="btnLogin0" y="11" right="101" width="110" height="31" label="Subscription"
 			  click="btnSubscription_clickHandler(event)" fontSize="14" fontWeight="bold"/>
+	<s:Button id="btnSearch" y="11" right="219" width="105" height="31" label="Recherche"
+			  click="btnSearch_clickHandler(event)" fontSize="14" fontWeight="bold"/>
 	
 	<view:Account id="Account" width="1265" height="612"/>
 	

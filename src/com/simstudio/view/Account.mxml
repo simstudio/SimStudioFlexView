@@ -89,6 +89,7 @@
 	
 	<s:VGroup x="268" y="41" width="700" height="543" paddingTop="30">
 		<view:Informations id="Informationsview" width="1265" height="709" includeIn="informations"/>
+		<view:Collaborators id="CollaboratorView" width="1265" height="709" includeIn="collaborator"/>
 		<view:Files id="FilesView" width="1265" height="709" includeIn="files"/>
 		<view:Groups id="GroupsView" width="1265" height="709" includeIn="groups"/>
 	</s:VGroup>

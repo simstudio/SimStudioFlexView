@@ -3,7 +3,7 @@
 				xmlns:s="library://ns.adobe.com/flex/spark"
 				width="612" height="608" close="closeHandler(event)" fontFamily="Arial"
 				horizontalAlign="left" initialize="init()" showCloseButton="true" textAlign="left"
-				title="Share a file with a collaborator or a group">
+				title="Search">
 	<mx:Script>
 		<![CDATA[
 			import mx.containers.HBox;
@@ -145,15 +145,16 @@
 					  contentBackgroundColor="#FFFFFF" dropShadowVisible="false" fontSize="13"
 					  paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4"
 					  textAlign="left"/>
-		<mx:Label x="67" y="28" fontSize="16" fontWeight="bold" text="Search a collaborator or a group to share"/>
+		<mx:Label x="67" y="28" fontSize="16" fontWeight="bold" text="Search"/>
 		<mx:ComboBox x="296" y="61" width="156" height="28"
 					 fontSize="13" fontWeight="bold" textAlign="center" change="comboboxChange(event)">
 			<mx:ArrayCollection>
 				<mx:String>Collaborateur</mx:String>
+				<mx:String>Fichier</mx:String>
 				<mx:String>Groupe</mx:String>
 			</mx:ArrayCollection>
 		</mx:ComboBox>
-		<mx:Image id="searchIcon" x="491" y="61" source="@Embed(source='assets/search_icon.png')" buttonMode="true" mouseOver="rollOverSearchIcon(event)" mouseOut="rollOutSearchIcon(event)"/>
+		<mx:Button buttonMode="true" x="491" y="61" upSkin="@Embed(source='assets/search_icon.png')" overSkin="@Embed(source='assets/search_icon.png')" downSkin="@Embed(source='assets/search_icon_reverse.png')"/>
 		
 		<mx:Image source="@Embed(source='assets/separator_popup.png')" y="140"/>
 	</mx:Canvas>
