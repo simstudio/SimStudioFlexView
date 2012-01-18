@@ -13,7 +13,7 @@
 						  fontFamily="Arial" fontSize="15"/>
 		</mx:FormItem>
 		<mx:FormItem width="494" label="Lastname" paddingLeft="60" paddingTop="15" textAlign="left">
-			<mx:TextInput id="inputPassword0" width="281" height="30" displayAsPassword="true"
+			<mx:TextInput id="inputPassword0" width="281" height="30"
 						  fontFamily="Arial" fontSize="15"/>
 		</mx:FormItem>
 		<s:Label fontFamily="Arial" fontSize="15" fontWeight="bold" text="Security informations"

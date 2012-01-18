@@ -47,8 +47,8 @@
 				fileRef.addEventListener(ProgressEvent.PROGRESS, fileRef_progress);
 				fileRef.addEventListener(Event.COMPLETE, fileRef_complete);
 				
-				addGroup();
-				addGroup();
+				addGroup(1);
+				addGroup(2);
 			}
 			
 			private function browseAndUpload():void {
@@ -74,11 +74,12 @@
 				progressBar.visible = false;
 			}
 			
-			private function addGroup():void {
+			private function addGroup(id:int):void {
 				
 				var imageEdit:Image = new Image();
 				imageEdit.width=35;
 				imageEdit.height=34;
+				imageEdit.name=id.toString();
 				imageEdit.load(this._imgEditOut);
 				imageEdit.buttonMode=true;
 				imageEdit.addEventListener(MouseEvent.CLICK, OpenEditPopUp);
@@ -90,9 +91,6 @@
 				groupLabel.x = 50;
 				groupLabel.y = 13;
 				groupLabel.buttonMode=true;
-				groupLabel.addEventListener(MouseEvent.MOUSE_OVER, HighlightGroupLink);
-				groupLabel.addEventListener(MouseEvent.MOUSE_OUT, DarkenGroupLink);
-				groupLabel.addEventListener(MouseEvent.CLICK, OpenGroup);
 				
 				var lastMessageLabel:spark.components.Label = new spark.components.Label();
 				lastMessageLabel.text = "(Modifier le 15/01/12 à 08h00)";
@@ -108,7 +106,7 @@
 				myCanvas.setStyle("y", 25);
 				myCanvas.width=720;
 				myCanvas.height=35;
-				myCanvas.id = "Groups1";
+				myCanvas.name="name"+id;
 				myCanvas.addChild(imageEdit);
 				myCanvas.addChild(groupLabel);
 				myCanvas.addChild(lastMessageLabel);
@@ -118,24 +116,29 @@
 				var myHbox:HBox = new HBox();
 				myHbox.width=720;
 				myHbox.height=35;
+				myHbox.name="Hbox"+id;
 				myHbox.addChild(myCanvas);
 				myVbox.addChild(myHbox);
 			}
 			
+			/**
+			 * Highlight the background of the Hbox selected
+			 * Hbox representing a file entry
+			 */
 			private function HighlightBackground(e:Event):void {
 				var myCanvas:Canvas = e.currentTarget as Canvas;
 				myCanvas.setStyle("backgroundColor", "#989898");
 			}
 			
+			/**
+			 * Darken the background of the Hbox selected
+			 * Hbox representing a file entry
+			 */
 			private function DarkenBackground(e:Event):void {
 				var myCanvas:Canvas = e.currentTarget as Canvas;
 				myCanvas.setStyle("backgroundColor", "#707070");
 			}
-			
-			private function OpenGroup(e:Event):void {
-				Alert.show("todo link to the group");
-			}
-			
+		
 			private function HighlightGroupLink(e:Event):void {
 				var link:spark.components.Label = e.currentTarget as spark.components.Label;
 				link.setStyle("color", "#333333");
@@ -211,7 +214,9 @@
 				deleteFileMenu.buttonMode=true;
 				deleteFileMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
 				deleteFileMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
-				deleteFileMenu.addEventListener(MouseEvent.CLICK, leaveGroup);
+				deleteFileMenu.addEventListener(MouseEvent.CLICK, function test(e:Event):void{
+					deleteFileAction(e, editBtn.name);
+				});
 				
 				var downloadFileMenu:spark.components.Label = new spark.components.Label();
 				downloadFileMenu.width=130;
@@ -225,7 +230,7 @@
 				downloadFileMenu.buttonMode=true;
 				downloadFileMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
 				downloadFileMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
-				downloadFileMenu.addEventListener(MouseEvent.CLICK, leaveGroup);
+				//downloadFileMenu.addEventListener(MouseEvent.CLICK, deleteFileAction);
 				
 				var EditFileMenu:spark.components.Label = new spark.components.Label();
 				EditFileMenu.width=130;
@@ -239,7 +244,7 @@
 				EditFileMenu.buttonMode=true;
 				EditFileMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
 				EditFileMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
-				EditFileMenu.addEventListener(MouseEvent.CLICK, leaveGroup);
+				//EditFileMenu.addEventListener(MouseEvent.CLICK, deleteFileAction);
 				
 				_openEditPopUp.addChild(shareFileMenu);
 				_openEditPopUp.addChild(deleteFileMenu);
@@ -262,15 +267,32 @@
 				link.setStyle("color", "#000000");
 			}
 			
-			private function leaveGroup(e:Event):void {
-				Alert.show("Todo implement leave group action");
-			}
-			
+			/**
+			 * handler on the share button in the editpopup
+			 */
 			protected function btnShare_clickHandler(event:MouseEvent):void
 			{
 				var pop:IFlexDisplayObject = PopUpManager.createPopUp(this, PopupShareFile, true);
 				PopUpManager.centerPopUp(pop);
-				
+			}
+			
+			/**
+			 * Delete the file in the list
+			 */
+			private function deleteFileAction(e:Event, id:String):void {
+				var vbox:VBox = this['myVbox'];
+				var hbox:HBox = vbox.getChildByName("Hbox"+id) as HBox;
+
+				hbox.removeAllChildren();
+				CloseEditPopUp();
+			}
+			
+			/**
+			 * Close the editPopUp
+			 */
+			private function CloseEditPopUp():void {
+				this['globalCanvas'].removeChild(_openEditPopUp);
+				_openEditPopUp = null;
 			}
 			
 		]]>
@@ -279,10 +301,12 @@
 	<mx:VBox id="myVbox" x="5" y="10" width="720" height="700" verticalAlign="top" direction="vertical" maxWidth="720" />
 	<!--<mx:HBox id="myHbox" x="5" y="10" width="1214" height="700" verticalAlign="top" direction="vertical" maxWidth="720" />-->
 	</mx:Canvas>
-	<mx:Button id="btnUpload" x="6" y="13" width="107" height="30" label="Upload file"
+	<mx:Button id="btnUpload" x="619" y="14" width="107" height="30" label="Upload file"
 			   click="browseAndUpload();" color="#FFFFFF" fontSize="15" fontWeight="bold"
 			   textRollOverColor="#ffb400"/>
-	<mx:Label id="message" x="203" y="23"/>
-	<mx:ProgressBar id="progressBar" visible="false" x="130" y="13" indeterminate="true"/>
+	<mx:Label id="message" x="458" y="20"/>
+	<s:Label x="5" y="20" fontFamily="Arial" fontSize="18" fontWeight="normal" text="My Files"/>
+	<mx:ProgressBar id="progressBar" visible="false" x="235" y="20" width="136" height="34"
+					indeterminate="true"/>
 	
 </s:Group>

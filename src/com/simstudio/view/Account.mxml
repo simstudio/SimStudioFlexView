@@ -62,6 +62,7 @@
 		<s:State name="collaborator"/> 
 		<s:State name="groups"/> 
 		<s:State name="files"/> 
+		<s:State name="group_view"/>
 	</s:states>
 	<!-- Profiles -->
 	<s:Image x="-87" y="386" source="@Embed(source='assets/account_logo_background.png')"/>
@@ -87,10 +88,11 @@
 			 source="@Embed(source='assets/account_background_masque.png')"/>
 	<s:Image x="218" y="57" source="@Embed(source='assets/account_pointilles.png')"/>
 	
-	<s:VGroup x="268" y="41" width="700" height="543" paddingTop="30">
+	<s:VGroup id="VGroup" x="268" y="41" width="700" height="543" paddingTop="30">
 		<view:Informations id="Informationsview" width="1265" height="709" includeIn="informations"/>
 		<view:Collaborators id="CollaboratorView" width="1265" height="709" includeIn="collaborator"/>
 		<view:Files id="FilesView" width="1265" height="709" includeIn="files"/>
 		<view:Groups id="GroupsView" width="1265" height="709" includeIn="groups"/>
+		<view:GroupShow id="GroupShow" width="1265" height="709" includeIn="group_view"/>
 	</s:VGroup>
 </s:Group>

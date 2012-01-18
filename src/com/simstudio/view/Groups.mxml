@@ -13,8 +13,11 @@
 			import mx.controls.Alert;
 			import mx.controls.Button;
 			import mx.controls.Image;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
 			import mx.core.UIComponent;
 			
+			import spark.components.Application;
 			import spark.components.Label;
 			import spark.components.VGroup;
 			
@@ -63,7 +66,7 @@
 				groupLabel.buttonMode=true;
 				groupLabel.addEventListener(MouseEvent.MOUSE_OVER, HighlightGroupLink);
 				groupLabel.addEventListener(MouseEvent.MOUSE_OUT, DarkenGroupLink);
-				groupLabel.addEventListener(MouseEvent.CLICK, OpenEditPopUp);
+				groupLabel.addEventListener(MouseEvent.CLICK, showGroup);
 				
 				var lastMessageLabel:Label = new Label();
 				lastMessageLabel.text = "Last post the 31 september";
@@ -93,6 +96,13 @@
 				myHbox.addChild(myCanvas);
 				myVbox.addChild(myHbox);
 			}
+			
+			private function showGroup(e:Event):void {
+				//Alert.show(currentState);
+				Alert.show(currentState);
+				Alert.show(FlexGlobals.topLevelApplication.Account.currentState);
+			}
+			
 			
 			private function HighlightBackground(e:Event):void {
 				var myCanvas:Canvas = e.currentTarget as Canvas;
@@ -208,13 +218,10 @@
 			}
 			
 			private function leaveGroupAction(e:Event, id:String):void {
-				//var link:Label = e.currentTarget as spark.components.Label;
-				var test:VBox = this['myVbox'];
-				var test1:HBox = test.getChildByName("Hbox"+id) as HBox;
+				var vbox:VBox = this['myVbox'];
+				var hbox:HBox = vbox.getChildByName("Hbox"+id) as HBox;
 
-				//test.addEventListener(MouseEvent.MOUSE_OVER, HighlightBackground);
-				//test.addEventListener(MouseEvent.MOUSE_OUT, DarkenBackground);
-				test1.removeAllChildren();
+				hbox.removeAllChildren();
 				CloseEditPopUp();
 			}
 			
@@ -229,9 +236,11 @@
 		
 		]]>
 	</fx:Script>
-	<mx:Canvas id="globalCanvas">
+
+	<mx:Canvas id="globalCanvas" x="1" y="37">
 	<mx:VBox id="myVbox" x="5" y="10" width="720" height="700" verticalAlign="top" direction="vertical" maxWidth="720" />
 	<mx:HBox id="myHbox" x="5" y="10" width="1214" height="700" verticalAlign="top" direction="vertical" maxWidth="720" />
 
 	</mx:Canvas>
+	<s:Label x="6" y="14" fontFamily="Arial" fontSize="18" fontWeight="normal" text="My Groups"/>
 </s:Group>
