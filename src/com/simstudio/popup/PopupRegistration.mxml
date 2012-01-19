@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:services="services.*"
 				width="610" height="506" close="closeHandler(event)" fontFamily="lucida"
 				showCloseButton="true" textAlign="right">
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.object_proxy;
 			
 			private var imgValid:String = "assets/valid.png";
 			private var imgError:String = "assets/error.png";
@@ -58,6 +61,23 @@
 				moveEffect.play();
 			}
 			
+			
+			
+			/*Modifier une fois que UserName sera ajouté*/
+			protected function button_clickHandler(event:MouseEvent):void
+			{
+				subscriptionResult.token = userDAO.subscription(inputEmail.text, inputPassword.text, "testounet", 
+					inputFirstname.text, inputLastname.text);
+				//Alert.show(subscriptionResult.);
+			}
+			
+			private function subscriptionService_resultHandler(event:ResultEvent):void
+			{
+				var checkLogin:String = subscriptionResult.lastResult;
+				if(checkLogin != "")
+					Alert.show(checkLogin);
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:Move id="moveEffect" xFrom="-100"/>
@@ -90,8 +110,9 @@
 							  displayAsPassword="true" fontFamily="Arial" fontSize="15"/>
 			</mx:FormItem>
 			<mx:FormItem width="464" height="95" textAlign="center" paddingLeft="100" paddingTop="40">
-				<mx:Button width="112" height="45" label="Valider" chromeColor="#FF9C00" color="#FFFFFF"
-						   enabled="true" focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>
+				<mx:Button id="button" width="112" height="45" label="Valider" chromeColor="#FF9C00"
+						   click="button_clickHandler(event)" color="#FFFFFF" enabled="true"
+						   focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>
 			</mx:FormItem>
 		</mx:Form>
 		<mx:Image x="525" y="92"  id="img_email"/>
@@ -99,5 +120,10 @@
 		<mx:Image x="525" y="228" id="img_password_repeated"/>
 
 	</mx:Canvas>
+	<mx:CallResponder id="subscriptionResult"/>
+	<services:UserDAO id="userDAO"
+					  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+					  result="subscriptionService_resultHandler(event)"
+					  showBusyCursor="true"/>
 	
 </mx:TitleWindow>
