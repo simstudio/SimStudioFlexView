@@ -103,7 +103,6 @@
 				Alert.show(FlexGlobals.topLevelApplication.Account.currentState);
 			}
 			
-			
 			private function HighlightBackground(e:Event):void {
 				var myCanvas:Canvas = e.currentTarget as Canvas;
 				myCanvas.setStyle("backgroundColor", "#989898");
