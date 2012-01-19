@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:services="services.*"
 				width="502" height="296" close="closeHandler(event)" fontFamily="Arial"
 				showCloseButton="true" textAlign="right">
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
 			
 			private function closeHandler(event:CloseEvent):void
 			{
@@ -17,6 +19,31 @@
 				moveEffect.target = formLogin;
 				moveEffect.play();
 			}
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				//Alert.show("Removed Successfully");
+				existUserResult.token = userDAO.existUser(inputPassword.text, inputEmail.text);
+				//var test:Boolean = existUserResult.token;
+				//Alert.show("You login is :"+inputEmail.text+" and yous passowrd is :"+inputPassword.text);
+				//Alert.show(existUserResult.lastResult);
+				
+			}
+			
+			protected function loginresult_resultHandler(event:ResultEvent):void
+			{
+				// TODO Auto-generated method stub
+				//Alert.show("Removed Successfully");
+				//existUserResult.token = userDAO.existUser(inputPassword.text, inputEmail.text);
+				//var test:Boolean = existUserResult.token;
+				//Alert.show("You login is :"+inputEmail.text+" and yous passowrd is :"+inputPassword.text);
+				//Alert.show(existUserResult.lastResult);
+				var checkconnexion:String = existUserResult.lastResult;
+				if (checkconnexion != "") Alert.show(checkconnexion);
+				
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -32,12 +59,18 @@
 		</mx:FormItem>
 		<mx:FormItem width="451" label="Password" fontWeight="bold" paddingLeft="60" paddingTop="15">
 			<mx:TextInput id="inputPassword" width="281" height="30" displayAsPassword="true"
-						  fontFamily="Arial" fontSize="15"/>
+						  fontFamily="Arial" fontSize="15" textAlign="left"/>
 		</mx:FormItem>
 		<mx:FormItem width="449" height="65" textAlign="center" paddingLeft="100" paddingTop="15">
-			<mx:Button width="112" height="45" label="Valider" chromeColor="#FF9C00" color="#FFFFFF"
-					   enabled="true" focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>
+			<mx:Button id="button" width="112" height="45" label="Valider" chromeColor="#FF9C00"
+					   click="button1_clickHandler(event)" color="#FFFFFF" enabled="true"
+					   focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>
 		</mx:FormItem>
 	</mx:Form>
+	<mx:CallResponder id="existUserResult"/>
+	<services:UserDAO id="userDAO"
+					  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+					  result="loginresult_resultHandler(event)"
+					  showBusyCursor="true"/>
 	
 </mx:TitleWindow>

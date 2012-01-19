@@ -18,10 +18,10 @@
 				PopUpManager.centerPopUp(pop);
 				
 			}
-			
 		]]>
 	</fx:Script>
-	<mx:Button id="btnUpload" x="31" y="31" width="171" height="30" label="Find collaborators"
+	<mx:Button id="btnUpload" x="438" y="30" width="171" height="30" label="Find collaborators"
 			   color="#FFFFFF" fontSize="15" fontWeight="bold"
 			   textRollOverColor="#ffb400" click="btnFindCollaborator_clickHandler(event)"/>
+	<s:Label x="10" y="43" fontFamily="Arial" fontSize="18" fontWeight="normal" text="My Collaborators"/>
 </s:Group>
