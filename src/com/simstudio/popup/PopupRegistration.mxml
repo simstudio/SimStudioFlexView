@@ -62,7 +62,7 @@
 			
 			
 			/*Modifier une fois que UserName sera ajouté*/
-			protected function button_clickHandler(event:MouseEvent):void
+			private function button_clickHandler(event:Event):void
 			{
 				subscriptionResult.token = userDAO.subscription(inputEmail.text, inputPassword.text, "testounet", 
 					inputFirstname.text, inputLastname.text);
@@ -72,8 +72,10 @@
 			private function subscriptionService_resultHandler(event:ResultEvent):void
 			{
 				var checkLogin:String = subscriptionResult.lastResult;
-				if(checkLogin != "")
+				if (checkLogin != "") 
+				{
 					Alert.show(checkLogin);
+				}
 			}
 			
 		]]>

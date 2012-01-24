@@ -119,7 +119,7 @@
 				groupLabel.buttonMode=true;
 				
 				var lastMessageLabel:spark.components.Label = new spark.components.Label();
-				lastMessageLabel.text = "(Modifier le " + updatedAt.date + ")";
+				lastMessageLabel.text = "(Modifier le "+updatedAt.date+"/"+updatedAt.month+"/"+updatedAt.fullYear+" "+updatedAt.hours+":"+updatedAt.minutes+":"+updatedAt.seconds+")";
 				lastMessageLabel.setStyle("fontSize", 12);
 				lastMessageLabel.setStyle("fontStyle", "italic");
 				lastMessageLabel.x = 500;
@@ -256,7 +256,7 @@
 				downloadFileMenu.buttonMode=true;
 				downloadFileMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
 				downloadFileMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
-				//downloadFileMenu.addEventListener(MouseEvent.CLICK, deleteFileAction);
+				downloadFileMenu.addEventListener(MouseEvent.CLICK, deleteFileAction);
 				
 				var EditFileMenu:spark.components.Label = new spark.components.Label();
 				EditFileMenu.width=130;
@@ -308,8 +308,10 @@
 			private function deleteFileAction(e:Event, id:String):void {
 				var vbox:VBox = this['myVbox'];
 				var hbox:HBox = vbox.getChildByName("Hbox"+id) as HBox;
-
 				hbox.removeAllChildren();
+				
+
+				
 				CloseEditPopUp();
 			}
 			

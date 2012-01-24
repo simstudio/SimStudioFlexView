@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:services="services.*"
 				width="612" height="608" close="closeHandler(event)" fontFamily="Arial"
 				horizontalAlign="left" initialize="init()" showCloseButton="true" textAlign="left"
 				title="Share a file with a collaborator or a group">
@@ -11,6 +12,9 @@
 			import mx.controls.Button;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.User;
 			
 			/**
 			 * 
@@ -26,43 +30,10 @@
 			
 			
 			private function init():void{
-				addGroup('Fabien POMEROL (fabpom)','Ajouter collaborateur');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				addGroup('Maxime Urvoy (MaxiMongz)', 'Collaborer');
-				
+
 			}
 			
-			private function addGroup(fileName:String, buttonName:String):void {
+			private function addGroup(id:int, fileName:String):void {
 				
 				var groupLabel:Label = new Label();
 				groupLabel.text = fileName;
@@ -83,7 +54,7 @@
 				myCanvas.addChild(groupLabel);
 				//myCanvas.addChild(myBtn);
 				myCanvas.addEventListener(MouseEvent.ROLL_OVER, function HighlightBackgroundTest(e:Event):void{
-					HighlightBackground(e, buttonName);
+					HighlightBackground(e, "Share");
 				});
 				
 				myCanvas.addEventListener(MouseEvent.ROLL_OUT, DarkenBackground);
@@ -121,15 +92,20 @@
 			private function comboboxChange(e:Event):void {
 				
 			}
+
 			
-			private function rollOverSearchIcon(e:Event):void {
-				var iconSearch:Image = e.currentTarget as Image;
-				iconSearch.source = "assets/search_icon_reverse.png";
+			private function resultHandler(result:ResultEvent, type:String):void {
+				var t:Object = result.result;
+					
+				for (var i:String in t) {
+					var user:User = t[i];
+					var label:String = user.firstName+" "+user.lastName+" ("+user.email+")";
+					addGroup(user.id, label);
+				}
 			}
 			
-			private function rollOutSearchIcon(e:Event):void {
-				var iconSearch:Image = e.currentTarget as Image;
-				iconSearch.source = "assets/search_icon.png";
+			private function searchButton_click(event):void {
+				
 			}
 			
 		]]>
@@ -153,11 +129,15 @@
 				<mx:String>Groupe</mx:String>
 			</mx:ArrayCollection>
 		</mx:ComboBox>
-		<mx:Image id="searchIcon" x="491" y="61" source="@Embed(source='assets/search_icon.png')" buttonMode="true" mouseOver="rollOverSearchIcon(event)" mouseOut="rollOutSearchIcon(event)"/>
-		
-		<mx:Image source="@Embed(source='assets/separator_popup.png')" y="140"/>
+		<mx:Button buttonMode="true" x="491" y="61" click="searchButton_click(event)" upSkin="@Embed(source='assets/search_icon.png')" overSkin="@Embed(source='assets/search_icon.png')" downSkin="@Embed(source='assets/search_icon_reverse.png')"/>
+
 	</mx:Canvas>
 	<mx:VBox id="myVbox" x="5" y="10" width="600" height="413" maxWidth="720" direction="vertical"
 			 paddingTop="10" verticalAlign="top">
 	</mx:VBox>
+	<mx:CallResponder id="getResult"/>
+	<services:UserDAO id="userDAO"
+					  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+					  result="resultHandler(event, 'user')"
+					  showBusyCursor="true"/>
 </mx:TitleWindow>

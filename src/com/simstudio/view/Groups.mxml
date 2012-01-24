@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="1254" height="556" initialize="init()">
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:services="services.*" width="1254" height="556" initialize="init()">
 	<fx:Declarations>
 		<!-- Placer ici les éléments non visuels (services et objets de valeur, par exemple). -->
+		<mx:CallResponder id="getGroupsResult"/>
+		<services:GroupDAO id="groupDAO"
+						  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+						  result="resultHandler(event)"
+						  showBusyCursor="true"/>
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
@@ -16,10 +22,14 @@
 			import mx.core.Application;
 			import mx.core.FlexGlobals;
 			import mx.core.UIComponent;
+			import mx.rpc.events.ResultEvent;
 			
 			import spark.components.Application;
 			import spark.components.Label;
 			import spark.components.VGroup;
+			
+			import valueObjects.File;
+			import valueObjects.Group;
 			
 			
 			private var _newCanvas:Canvas;
@@ -37,17 +47,22 @@
 			private var _imgEditOver:String = "assets/edit_black.png";
 			private var _imgEditOut:String = "assets/edit_white.png";
 
-			private function init():void{
-				addGroup(11);
-				addGroup(12);
-				addGroup(13);
-				addGroup(14);
-				addGroup(15);
-				addGroup(16);
-				addGroup(17);
+			private function resultHandler(result:ResultEvent):void {
+
+				var t:Object = result.result;
+				
+				for (var i:String in t) {
+					var group:valueObjects.Group = t[i];
+					addGroup(group.id, group.name);
+				}
 			}
 			
-			private function addGroup(id:int):void {
+			private function init():void{
+				//@todo refactored
+				getGroupsResult.token = groupDAO.getGroups();
+			}
+			
+			private function addGroup(id:int, name:String):void {
 				
 				var imageEdit:Image = new Image();
 				imageEdit.width=35;
@@ -58,7 +73,7 @@
 				imageEdit.addEventListener(MouseEvent.CLICK, OpenEditPopUp);
 				
 				var groupLabel:Label = new Label();
-				groupLabel.text = "SimStudio";
+				groupLabel.text = name;
 				groupLabel.setStyle("fontSize", 12);
 				groupLabel.setStyle("fontWeight", "bold");
 				groupLabel.x = 50;

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:services="services.*"
+		 width="400" height="300">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			
+			protected function dataGrid_creationCompleteHandler(event:FlexEvent):void
+			{
+				getFilesResult.token = fileDAO.getFiles();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:CallResponder id="getFilesResult"/>
+		<services:FileDAO id="fileDAO"
+						  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+						  showBusyCursor="true"/>
+		<!-- Placer ici les éléments non visuels (services et objets de valeur, par exemple). -->
+	</fx:Declarations>
+	<s:DataGrid id="dataGrid" x="10" y="83"
+				creationComplete="dataGrid_creationCompleteHandler(event)" requestedRowCount="4">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="id" headerText="id"></s:GridColumn>
+				<s:GridColumn dataField="extension" headerText="extension"></s:GridColumn>
+				<s:GridColumn dataField="users" headerText="users"></s:GridColumn>
+				<s:GridColumn dataField="updateAt" headerText="updateAt"></s:GridColumn>
+				<s:GridColumn dataField="createdAt" headerText="createdAt"></s:GridColumn>
+				<s:GridColumn dataField="name" headerText="name"></s:GridColumn>
+				<s:GridColumn dataField="user" headerText="user"></s:GridColumn>
+				<s:GridColumn dataField="groups" headerText="groups"></s:GridColumn>
+				<s:GridColumn dataField="size" headerText="size"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+		<s:typicalItem>
+			<fx:Object id="id1" createdAt="createdAt1" extension="extension1" groups="groups1"
+					   name="name1" size="size1" updateAt="updateAt1" user="user1" users="users1"></fx:Object>
+		</s:typicalItem>
+		<s:AsyncListView list="{getFilesResult.lastResult}"/>
+	</s:DataGrid>
+</s:Group>
