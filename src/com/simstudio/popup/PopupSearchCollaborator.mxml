@@ -10,6 +10,7 @@
 			import mx.containers.HBox;
 			import mx.controls.Alert;
 			import mx.controls.Button;
+			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.ResultEvent;
@@ -89,22 +90,18 @@
 				this.activeButton.x=460;
 				this.activeButton.setStyle("color", "#26afbc");
 				this.activeButton.setStyle("textRollOverColor", "#26afbc");
-				//this.activeButton.addEventListener(MouseEvent.CLICK, function AddCollaborator(e:Event):void{
-					//getResult.token = userDAO.addCollaborator(1, id);
-					//PopUpManager.removePopUp(this);
-				//});
-				this.activeButton.addEventListener(MouseEvent.CLICK, function toto(e:Event):void { 
-					
-					getResult.token = userDAO.addCollaborator(5,6);
-					PopUpManager.removePopUp(this);
-				
-				});
-				myCanvas.addChild(this.activeButton);
-				
-			}
-			
+				this.activeButton.addEventListener(MouseEvent.CLICK, function askUserToCollaborator(e:Event):void { 
+				getResult.token = userDAO.askUserToCollaborator(5,6); 
+				Alert.show("user asked");
 
+				});
+				
+				
 			
+				
+				myCanvas.addChild(this.activeButton);
+			}
+
 			private function DarkenBackground(e:Event):void {
 				var myCanvas:Canvas = e.currentTarget as Canvas;
 				myCanvas.setStyle("backgroundColor", "#707070");
@@ -144,6 +141,7 @@
 				myVbox.removeAllChildren();
 				
 				getResult.token = userDAO.findUserByUsernameOrEmail(inputSearchTerm.text);
+				
 			}
 			
 			
