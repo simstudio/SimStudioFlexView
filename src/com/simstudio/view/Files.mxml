@@ -10,6 +10,7 @@
 						  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 						  result="resultHandler(event)"
 						  showBusyCursor="true"/>
+		
 	</fx:Declarations>
 	
 	
@@ -241,7 +242,9 @@
 				deleteFileMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
 				deleteFileMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
 				deleteFileMenu.addEventListener(MouseEvent.CLICK, function test(e:Event):void{
-					deleteFileAction(e, editBtn.name);
+				deleteFileAction(e, editBtn.name);
+				getFilesResult.token = fileDAO.removeFile(int(editBtn.name));
+				Alert.show("file deleted");
 				});
 				
 				var downloadFileMenu:spark.components.Label = new spark.components.Label();
@@ -337,5 +340,6 @@
 	<mx:ProgressBar id="progressBar" visible="false" x="235" y="20" width="136" height="34"
 					indeterminate="true"/>
 
+	
 	
 </s:Group>
