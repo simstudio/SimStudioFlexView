@@ -23,6 +23,7 @@
 			import mx.core.FlexGlobals;
 			import mx.core.UIComponent;
 			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
 			
 			import spark.components.Application;
 			import spark.components.Label;
@@ -30,9 +31,11 @@
 			
 			import valueObjects.File;
 			import valueObjects.Group;
+			import valueObjects.Message;
 			
 			
 			private var _newCanvas:Canvas;
+			
 			
 			/**
 			 * the instance of the edit popup showed
@@ -48,22 +51,105 @@
 			private var _imgEditOut:String = "assets/edit_white.png";
 
 			private function resultHandler(result:ResultEvent):void {
-
-				var t:Object = result.result;
-				
-				for (var i:String in t) {
-					var group:valueObjects.Group = t[i];
-					addGroup(group.id, group.name);
+				var items:Object = result.result;
+				var groups:Array = [];
+				for (var i:String in items) {
+					groups.push(items[i]);
 				}
+				processNextItem(groups);
 			}
+			
+			
+			protected function processNextItem(groups:Array):void{
+				if(groups.length < 0){
+					//fin process
+					Alert.show('nothing');
+				}else{
+
+					var item:valueObjects.Group = groups.pop()
+					
+					var ro:RemoteObject = new RemoteObject;
+					ro.destination = "groupDAO";
+					
+					function asyncProcessComplete(e:ResultEvent):void{
+						ro.removeEventListener("result",asyncProcessComplete)
+
+						var mess:Message = e.result as Message;
+						addGroup(item.id, item.name, mess);
+						
+						processNextItem(groups);
+					}
+					
+					ro.getLastGroupMessage.addEventListener("result",asyncProcessComplete);
+					
+					ro.getLastGroupMessage(item.id);
+				}	
+			}
+			
+//				var t:Object = result.result;
+//				var ro:RemoteObject = new RemoteObject;
+//				ro.destination = "groupDAO";
+//				for (var i:String in t) {
+//					var group:valueObjects.Group = t[i];
+//					
+//					var id:int = group.id;
+//					
+//					//I need to have differents group attribute (id, name) in the resultHandler.
+//					ro.getLastGroupMessage.addEventListener("result", addGroupResultHandler);  
+//					ro.param1 =  group.id;
+//					ro.param2 = group.name;
+//					ro.getLastGroupMessage(group.id);
+//					}
+//				}
+				
+//				protected function addGroupResultHandler(e:ResultEvent):void
+//				{
+//					var mess:Message = e.result as Message;
+//					
+//					// But here because the call is asynchronous i get always the same group
+//					addGroup(group.id, group.name, mess.createdAt);
+//				}
+//				
+//				for (var i:String in t) {
+//					var groupe:valueObjects.Group = t[i];
+////					Alert.show("ajout groupe"+groupee.id);
+//					groupLabel.text += "- Ajout Grp "+groupe.id+" -";
+//					/*for(var j:String in group.messages)
+//					{
+//						var message:Object = group.messages[j];
+//						Alert.show(message.content);
+//					}*/
+//					//Alert.show("okk");
+//					var ro:RemoteObject = new RemoteObject;
+//					ro.destination = "groupDAO";
+//					var id:int = groupe.id;
+//					ro.getLastGroupMessage.addEventListener("result", function addGroupResultHandler(e:ResultEvent, id:int):void
+//   					{
+//						
+//						//mettre dans une listen ordonnée le message recupéré
+//				
+//						//var mess:Message = e.result as Message;
+////						Alert.show("appel ajout groupe "+groupee.id);
+//					//	groupLabel.text += "- appel ajout grp "+id+" -";
+//						//addGroup(group.id, group.name); 
+//					});  
+//					ro.getLastGroupMessage(groupe.id);
+//					
+//				}
+			
+			
+//			protected function addGroupResultHandler(e:ResultEvent):void
+//			{
+//				e.result;
+//				ro.addGroup(group.id, group.name, group);
+//			}
 			
 			private function init():void{
 				//@todo refactored
 				getGroupsResult.token = groupDAO.getGroups();
 			}
 			
-			private function addGroup(id:int, name:String):void {
-				
+			private function addGroup(id:int, name:String, mess:Message):void {
 				var imageEdit:Image = new Image();
 				imageEdit.width=35;
 				imageEdit.height=34;
@@ -83,8 +169,15 @@
 				groupLabel.addEventListener(MouseEvent.MOUSE_OUT, DarkenGroupLink);
 				groupLabel.addEventListener(MouseEvent.CLICK, showGroup);
 				
+				var month:String="";
+				
+				if(mess.createdAt.month+1<10)
+					month = "0"+(mess.createdAt.month+1);
+				else
+					month=""+(mess.createdAt.month+1);
+				
 				var lastMessageLabel:Label = new Label();
-				lastMessageLabel.text = "Last post the 31 september";
+				lastMessageLabel.text = "Last post the "+mess.createdAt.date+"/"+month+"/"+mess.createdAt.fullYearUTC;
 				lastMessageLabel.setStyle("fontSize", 12);
 				lastMessageLabel.setStyle("fontStyle", "italic");
 				lastMessageLabel.x = 500;
@@ -256,5 +349,6 @@
 	<mx:HBox id="myHbox" x="5" y="10" width="1214" height="700" verticalAlign="top" direction="vertical" maxWidth="720" />
 
 	</mx:Canvas>
-	<s:Label x="6" y="14" fontFamily="Arial" fontSize="18" fontWeight="normal" text="My Groups"/>
+	<s:Label id="groupLabel" x="6" y="14" fontFamily="Arial" fontSize="18" fontWeight="normal"
+			 text="My Groups"/>
 </s:Group>
