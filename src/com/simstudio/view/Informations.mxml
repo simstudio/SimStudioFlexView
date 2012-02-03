@@ -2,18 +2,64 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 width="714" height="650">
+		 width="714" height="650" initialize="init()">
 	<fx:Declarations>
 		<!-- Placer ici les éléments non visuels (services et objets de valeur, par exemple). -->
 	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import valueObjects.User;
+			
+			public function init():void
+			{
+				this.addEventListener("UpdateDisplay", updateDisplayHandler);
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
+				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.getSessionAttribute('user');
+			}
+			
+			public function updateDisplayHandler(e:Event):void
+			{
+				Alert.show('refresh');
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
+				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.getSessionAttribute('user');
+			}
+			
+			
+			protected function getSessionResultHandler(e:ResultEvent):void
+			{
+				var user:User = e.result as User;
+				inputEmail.text = user.email;
+				inputFirstname.text = user.firstName;
+				inputLastname.text = user.lastName;
+			}
+			
+			protected function faultHandler():void
+			{
+				Alert.show('Oops !! An error occurred getting your personnals informations');
+			}
+			
+		]]>
+	</fx:Script>
+	
 	<mx:Form id="formLogin" width="572" height="569" textAlign="right">
 		<s:Label fontFamily="Arial" fontSize="15" fontWeight="bold" text="Personnal informations"/>
 		<mx:FormItem width="491" label="Firstname" paddingLeft="60" paddingTop="15" textAlign="left">
-			<mx:TextInput id="inputPassword" width="281" height="30"
+			<mx:TextInput id="inputFirstname" width="281" height="30"
 						  fontFamily="Arial" fontSize="15"/>
 		</mx:FormItem>
 		<mx:FormItem width="494" label="Lastname" paddingLeft="60" paddingTop="15" textAlign="left">
-			<mx:TextInput id="inputPassword0" width="281" height="30"
+			<mx:TextInput id="inputLastname" width="281" height="30"
 						  fontFamily="Arial" fontSize="15"/>
 		</mx:FormItem>
 		<s:Label fontFamily="Arial" fontSize="15" fontWeight="bold" text="Security informations"
