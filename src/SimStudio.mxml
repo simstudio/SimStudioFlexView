@@ -67,11 +67,13 @@
 	</mx:MenuBar>
 	<s:Button id="btnLogin" y="11" right="10" width="83" height="31" label="Login"
 			  click="btnLogin_clickHandler(event)" fontSize="14" fontWeight="bold"/>
-	<s:Button id="btnLogin0" y="11" right="101" width="110" height="31" label="Subscription"
+	<s:Button id="btnSubscription" y="11" right="101" width="110" height="31" label="Subscription"
 			  click="btnSubscription_clickHandler(event)" fontSize="14" fontWeight="bold"/>
-	<s:Button id="btnSearch" y="11" right="219" width="90" height="31" label="Search"
-			  click="btnSearch_clickHandler(event)" fontSize="14" fontWeight="bold"/>
+	<s:Button id="btnSearch" y="11" right="10" width="90" height="31" label="Search"
+			  click="btnSearch_clickHandler(event)" visible="false" fontSize="14" fontWeight="bold"/>
 	
-	<view:Account id="Account" width="1265" height="612"/>
+	<view:Account id="Account" width="1265" height="612" visible="false"/>
+	<s:Label id="username" visible="false" y="20" right="150" width="235" fontFamily="Arial"
+			 fontSize="12" fontWeight="bold" text="" textAlign="right" verticalAlign="bottom"/>
 	
 </s:Application>

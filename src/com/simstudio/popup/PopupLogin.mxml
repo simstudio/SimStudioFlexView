@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 				xmlns:services="services.*"
-				width="502" height="296" close="closeHandler(event)" fontFamily="Arial"
+				width="504" height="338" close="closeHandler(event)" fontFamily="Arial"
 				showCloseButton="true" textAlign="right">
 	<mx:Script>
 		<![CDATA[
+			import com.simstudio.view.Informations;
+			
+			import flash.utils.flash_proxy;
+			
 			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
+			import mx.rpc.AsyncToken;
 			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import userSession.Session;
+			
+			import valueObjects.User;
 			
 			private function closeHandler(event:CloseEvent):void
 			{
@@ -22,26 +34,59 @@
 			
 			protected function button1_clickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
-				//Alert.show("Removed Successfully");
 				existUserResult.token = userDAO.existUser(inputPassword.text, inputEmail.text);
-				//var test:Boolean = existUserResult.token;
-				//Alert.show("You login is :"+inputEmail.text+" and yous passowrd is :"+inputPassword.text);
-				//Alert.show(existUserResult.lastResult);
+			}
+			
+			protected function getSessionResultHandler(e:ResultEvent):void
+			{
+				var user:User = e.result as User;
+				FlexGlobals.topLevelApplication.btnLogin.setVisible(false);
+				FlexGlobals.topLevelApplication.btnSubscription.setVisible(false);
+				FlexGlobals.topLevelApplication.username.text = "Bienvenue "+user.firstName+" "+user.lastName;
+				FlexGlobals.topLevelApplication.username.setVisible(true);
+				FlexGlobals.topLevelApplication.btnSearch.setVisible(true);
+				FlexGlobals.topLevelApplication.Account.visible=true;
+		
+			}
+			
+			protected function saveSessionResultHandler(e:ResultEvent):void
+			{
 				
+			}
+			
+			protected function faultHandler(e:ResultEvent):void
+			{
+				Alert.show('Ooops!! It seem that you have a session error.');
 			}
 			
 			protected function loginresult_resultHandler(event:ResultEvent):void
 			{
-				// TODO Auto-generated method stub
-				//Alert.show("Removed Successfully");
-				//existUserResult.token = userDAO.existUser(inputPassword.text, inputEmail.text);
-				//var test:Boolean = existUserResult.token;
-				//Alert.show("You login is :"+inputEmail.text+" and yous passowrd is :"+inputPassword.text);
-				//Alert.show(existUserResult.lastResult);
-				var checkconnexion:String = existUserResult.lastResult;
-				if (checkconnexion != "") Alert.show(checkconnexion);
+				var existUser:String = existUserResult.lastResult;
+
+				if (existUser == "true") {
+					errorMessage.visible=false;
+					var ro:RemoteObject = new RemoteObject();
+					ro.destination = "userDAO";
+					ro.findUserByEmail.addEventListener("result", findUserByEmailResultHandler);
+					ro.findUserByEmail(inputEmail.text);
+				}
+				else {
+					errorMessage.visible=true;
+					inputPassword.text = "";
+				}
+			}
+			
+			protected function findUserByEmailResultHandler(e:ResultEvent):void
+			{
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				ro.saveSessionAttribute.addEventListener("result", saveSessionResultHandler);	
+				ro.saveSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.saveSessionAttribute('user', e.result);
 				
+				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
+				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.getSessionAttribute('user');
 			}
 			
 		]]>
@@ -49,10 +94,14 @@
 	
 	<mx:Move id="moveEffect" xFrom="-100"/>
 	
-	<mx:Form id="formLogin" width="483" height="247" textAlign="right" creationComplete="applyEffect(event)">
+	<mx:Form id="formLogin" width="491" height="287" textAlign="right" creationComplete="applyEffect(event)">
 		<mx:FormHeading label="Login" fontSize="15" textAlign="left"/>
+		<mx:Canvas id="errorMessage" backgroundColor="#FFE0B6" visible="false" borderColor="#FFBB65" height="25">
+			<mx:Label width="455" color="#c76e34" enabled="true" fontWeight="bold"
+					  text="The current email or password is invalid" textAlign="center" paddingTop="3"/>
+		</mx:Canvas>
 		<mx:FormItem width="450" label="Email" color="#FFFFFF" fontWeight="bold" paddingLeft="60"
-					 paddingTop="25" textAlign="left">
+					 paddingTop="5" textAlign="left">
 			<mx:TextInput id="inputEmail" width="282" height="30"
 						  dropShadowVisible="true"
 						  fontSize="15"/>
