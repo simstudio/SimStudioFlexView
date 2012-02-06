@@ -38,7 +38,7 @@
 			
 			protected function getSessionResultHandler(e:ResultEvent):void
 			{
-				var user:User = e.result as User;
+				var user = e.result;
 				inputEmail.text = user.email;
 				inputFirstname.text = user.firstName;
 				inputLastname.text = user.lastName;
@@ -47,6 +47,54 @@
 			protected function faultHandler():void
 			{
 				Alert.show('Oops !! An error occurred getting your personnals informations');
+			}
+			
+			protected function validationModification_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				try{
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				ro.getSessionAttribute.addEventListener("result", getSessionResultHandlerModificationUser);	
+				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.getSessionAttribute('user');
+				}
+				catch(err:Error){
+					Alert.show(err.message);
+				}
+			}
+			
+			protected function getSessionResultHandlerModificationUser(e:ResultEvent):void
+			{
+				try{
+					var user = e.result;
+					var ro:RemoteObject = new RemoteObject();
+					ro.destination = "userDAO";
+					ro.editUser.addEventListener("result", getResultHandlerEditionUser);	
+					ro.editUser.addEventListener("fault", faultHandler);	
+					ro.editUser(user.id, inputFirstname.text, inputLastname.text, inputEmail.text, inputPassword1.text, inputPassword2.text, inputPassword3.text);
+				}
+				catch(err:Error){
+					Alert.show(err.message);
+				}
+			}
+			
+			protected function getResultHandlerEditionUser(e:ResultEvent):void
+			{
+				try{
+					var response = e.result;
+					if(response != "")
+					{
+						Alert.show(response);
+					}
+					else
+					{
+						Alert.show("Modifications effectuées");
+					}
+				}
+				catch(err:Error){
+					Alert.show(err.message);
+				}
 			}
 			
 		]]>
@@ -85,7 +133,8 @@
 						  fontSize="15"/>
 		</mx:FormItem>
 		<mx:FormItem width="449" height="65" textAlign="center" paddingLeft="100" paddingTop="15">
-			<mx:Button width="112" height="45" label="Valider" chromeColor="#FF9C00" color="#FFFFFF"
+			<mx:Button id="validationModification" width="112" height="45" label="Valider"
+					   chromeColor="#FF9C00" click="validationModification_clickHandler(event)" color="#FFFFFF"
 					   enabled="true" focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>
 		</mx:FormItem>
 	</mx:Form>

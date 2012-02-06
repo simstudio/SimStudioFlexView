@@ -6,10 +6,10 @@
 	<fx:Declarations>
 		<!-- Placer ici les éléments non visuels (services et objets de valeur, par exemple). -->
 		<mx:CallResponder id="getGroupsResult"/>
-		<services:GroupDAO id="groupDAO"
+		<!--<services:GroupDAO id="groupDAO"
 						  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 						  result="resultHandler(event)"
-						  showBusyCursor="true"/>
+						  showBusyCursor="true"/>-->
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
@@ -32,6 +32,7 @@
 			import valueObjects.File;
 			import valueObjects.Group;
 			import valueObjects.Message;
+			import valueObjects.User;
 			
 			
 			private var _newCanvas:Canvas;
@@ -50,106 +51,80 @@
 			private var _imgEditOver:String = "assets/edit_black.png";
 			private var _imgEditOut:String = "assets/edit_white.png";
 
-			private function resultHandler(result:ResultEvent):void {
+			/*private function resultHandler(result:ResultEvent):void {
 				var items:Object = result.result;
 				var groups:Array = [];
 				for (var i:String in items) {
 					groups.push(items[i]);
 				}
 				processNextItem(groups);
-			}
+			}*/
 			
 			
 			protected function processNextItem(groups:Array):void{
-				if(groups.length < 0){
+				if(groups.length <= 0){
 					//fin process
-					Alert.show('nothing');
+					//Alert.show("Groups empty");
 				}else{
-
-					var item:valueObjects.Group = groups.pop()
-					
+					try{
+					var item:Object = groups.pop();
 					var ro:RemoteObject = new RemoteObject;
 					ro.destination = "groupDAO";
-					
 					function asyncProcessComplete(e:ResultEvent):void{
 						ro.removeEventListener("result",asyncProcessComplete)
-
-						var mess:Message = e.result as Message;
-						addGroup(item.id, item.name, mess);
-						
+						var mess = e.result;
+						try{
+							//Alert.show(mess.content);
+							addGroup(item.id, item.name, mess);
+						}catch(err:Error)
+						{
+							Alert.show("Erreur pour addGroup : "+item.name+" "+err.message);
+						}
 						processNextItem(groups);
 					}
-					
 					ro.getLastGroupMessage.addEventListener("result",asyncProcessComplete);
-					
+					ro.getLastGroupMessage.addEventListener("fault", faultHandler);
 					ro.getLastGroupMessage(item.id);
+					}catch(err:Error)
+					{
+						Alert.show(err.message);
+					}
+					
 				}	
 			}
 			
-//				var t:Object = result.result;
-//				var ro:RemoteObject = new RemoteObject;
-//				ro.destination = "groupDAO";
-//				for (var i:String in t) {
-//					var group:valueObjects.Group = t[i];
-//					
-//					var id:int = group.id;
-//					
-//					//I need to have differents group attribute (id, name) in the resultHandler.
-//					ro.getLastGroupMessage.addEventListener("result", addGroupResultHandler);  
-//					ro.param1 =  group.id;
-//					ro.param2 = group.name;
-//					ro.getLastGroupMessage(group.id);
-//					}
-//				}
-				
-//				protected function addGroupResultHandler(e:ResultEvent):void
-//				{
-//					var mess:Message = e.result as Message;
-//					
-//					// But here because the call is asynchronous i get always the same group
-//					addGroup(group.id, group.name, mess.createdAt);
-//				}
-//				
-//				for (var i:String in t) {
-//					var groupe:valueObjects.Group = t[i];
-////					Alert.show("ajout groupe"+groupee.id);
-//					groupLabel.text += "- Ajout Grp "+groupe.id+" -";
-//					/*for(var j:String in group.messages)
-//					{
-//						var message:Object = group.messages[j];
-//						Alert.show(message.content);
-//					}*/
-//					//Alert.show("okk");
-//					var ro:RemoteObject = new RemoteObject;
-//					ro.destination = "groupDAO";
-//					var id:int = groupe.id;
-//					ro.getLastGroupMessage.addEventListener("result", function addGroupResultHandler(e:ResultEvent, id:int):void
-//   					{
-//						
-//						//mettre dans une listen ordonnée le message recupéré
-//				
-//						//var mess:Message = e.result as Message;
-////						Alert.show("appel ajout groupe "+groupee.id);
-//					//	groupLabel.text += "- appel ajout grp "+id+" -";
-//						//addGroup(group.id, group.name); 
-//					});  
-//					ro.getLastGroupMessage(groupe.id);
-//					
-//				}
-			
-			
-//			protected function addGroupResultHandler(e:ResultEvent):void
-//			{
-//				e.result;
-//				ro.addGroup(group.id, group.name, group);
-//			}
+			protected function faultHandler(e:ResultEvent):void
+			{
+				Alert.show('Ooops!! It seem that you have an asyncprocess error.');
+			}
 			
 			private function init():void{
 				//@todo refactored
-				getGroupsResult.token = groupDAO.getGroups();
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				
+				ro.getSessionAttribute.addEventListener("result", getUserResultHandler);	
+				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.getSessionAttribute('user');
+			
 			}
 			
-			private function addGroup(id:int, name:String, mess:Message):void {
+			private function getUserResultHandler(result:ResultEvent):void{
+				try{
+					var user:valueObjects.User = result.result as User;
+					//Alert.show(user.groups_2.getItemAt(1)+"");
+					var groups = user.groups_2.toArray();
+					processNextItem(groups);
+					//var gr:Array;
+					
+				}catch(err:Error)
+				{
+					Alert.show(err.message);
+				}
+				
+			}
+			
+			private function addGroup(id:int, name:String, mess:Object):void {
 				var imageEdit:Image = new Image();
 				imageEdit.width=35;
 				imageEdit.height=34;
@@ -327,7 +302,7 @@
 			private function leaveGroupAction(e:Event, id:String):void {
 				var vbox:VBox = this['myVbox'];
 				var hbox:HBox = vbox.getChildByName("Hbox"+id) as HBox;
-
+				
 				hbox.removeAllChildren();
 				CloseEditPopUp();
 			}

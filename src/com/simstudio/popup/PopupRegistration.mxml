@@ -5,11 +5,18 @@
 				showCloseButton="true" textAlign="right">
 	<mx:Script>
 		<![CDATA[
+			import com.simstudio.view.Informations;
+			
 			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
+			import mx.messaging.messages.ErrorMessage;
 			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
 			import mx.utils.object_proxy;
+			
+			import valueObjects.User;
 			
 			private var imgValid:String = "assets/valid.png";
 			private var imgError:String = "assets/error.png";
@@ -64,32 +71,86 @@
 			/*Modifier une fois que UserName sera ajouté*/
 			private function button_clickHandler(event:Event):void
 			{
-				subscriptionResult.token = userDAO.subscription(inputEmail.text, inputPassword.text, "testounet", 
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "userDAO";
+				ro.subscription.addEventListener("result", subscriptionService_resultHandler);
+				ro.subscription(inputEmail.text, inputPassword.text, inputUsername.text, 
 					inputFirstname.text, inputLastname.text);
-				//Alert.show(subscriptionResult.);
 			}
 			
 			private function subscriptionService_resultHandler(event:ResultEvent):void
 			{
-				var checkLogin:String = subscriptionResult.lastResult;
+				
+				var checkLogin = event.result;
 				if (checkLogin != "") 
 				{
 					Alert.show(checkLogin);
 				}
+				else
+				{
+					var ro:RemoteObject = new RemoteObject();
+					ro.destination = "userDAO";
+					ro.findUserByEmail.addEventListener("result", findUserByEmailResultHandler);
+					ro.findUserByEmail(inputEmail.text);
+				}
 			}
+			
+			protected function findUserByEmailResultHandler(e:ResultEvent):void
+			{
+				try{
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				ro.saveSessionAttribute.addEventListener("result", saveSessionResultHandler);	
+				ro.saveSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.saveSessionAttribute('user', e.result);
+				
+				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
+				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.getSessionAttribute('user');
+				}catch(err:Error)
+				{
+					Alert.show(err.message);
+				}
+			}
+			
+			protected function getSessionResultHandler(e:ResultEvent):void
+			{
+				var user = e.result;
+				FlexGlobals.topLevelApplication.btnLogin.setVisible(false);
+				FlexGlobals.topLevelApplication.btnSubscription.setVisible(false);
+				FlexGlobals.topLevelApplication.username.text = "Bienvenue "+user.firstName+" "+user.lastName;
+				FlexGlobals.topLevelApplication.username.setVisible(true);
+				FlexGlobals.topLevelApplication.btnSearch.setVisible(true);
+				FlexGlobals.topLevelApplication.Account.visible=true;
+				
+				this.visible = false;
+				
+			}
+			
+			protected function saveSessionResultHandler(e:ResultEvent):void
+			{
+				var user:User = e.result as User;
+				Alert.show(user.lastName);
+			}
+			
+			protected function faultHandler(e:ResultEvent):void
+			{
+				Alert.show('Ooops!! It seem that you have a session error.');
+			}
+			
 			
 		]]>
 	</mx:Script>
 	<mx:Move id="moveEffect" xFrom="-100"/>
-	<mx:Canvas width="598" height="430" color="#FFFFFF" id="formSubscription" creationComplete="applyEffect(event)">
-		<mx:Form width="517" height="420" fontFamily="Arial" textAlign="left">
-			<mx:FormHeading width="303" label="Inscrivez vous" fontSize="15" fontStyle="normal"
-							textDecoration="none" paddingTop="10"/>
-			<mx:FormItem label="Email" color="#FFFFFF" fontWeight="bold" paddingLeft="60"
-						 paddingTop="25" textAlign="left">
-				<mx:TextInput id="inputEmail" width="294" height="30"
-							  focusOut="checkEmail(event)" dropShadowVisible="true"
-							  fontSize="15"/>
+	<mx:Canvas width="598" height="447" color="#FFFFFF" id="formSubscription" creationComplete="applyEffect(event)">
+		<mx:Form width="517" height="437" fontFamily="Arial" textAlign="left">
+			<mx:FormHeading width="303" height="41" label="Inscrivez vous" fontSize="15"
+							fontStyle="normal" paddingTop="10" textDecoration="none"/>
+			<mx:FormItem height="76" label="Email" color="#FFFFFF" fontWeight="bold" paddingLeft="60"
+						 paddingTop="10" textAlign="left">
+				<mx:TextInput id="inputEmail" width="294" height="30" dropShadowVisible="true"
+							  focusOut="checkEmail(event)" fontSize="15" paddingBottom="5"/>
+				<mx:TextInput id="inputUsername" width="294" height="30" dropShadowVisible="true"/>
 			</mx:FormItem>
 			<mx:FormItem label="Firstname" fontWeight="bold" paddingLeft="60"
 						 paddingTop="15">
@@ -120,9 +181,6 @@
 
 	</mx:Canvas>
 	<mx:CallResponder id="subscriptionResult"/>
-	<services:UserDAO id="userDAO"
-					  fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
-					  result="subscriptionService_resultHandler(event)"
-					  showBusyCursor="true"/>
+	
 	
 </mx:TitleWindow>

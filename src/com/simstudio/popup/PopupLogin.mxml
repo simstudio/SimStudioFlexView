@@ -18,8 +18,6 @@
 			import mx.rpc.events.ResultEvent;
 			import mx.rpc.remoting.RemoteObject;
 			
-			import userSession.Session;
-			
 			import valueObjects.User;
 			
 			private function closeHandler(event:CloseEvent):void
@@ -34,7 +32,11 @@
 			
 			protected function button1_clickHandler(event:MouseEvent):void
 			{
-				existUserResult.token = userDAO.existUser(inputPassword.text, inputEmail.text);
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "userDAO";
+				ro.existUser.addEventListener("result", loginresult_resultHandler);	
+				ro.existUser.addEventListener("fault", faultHandler);	
+				ro.existUser(inputPassword.text, inputEmail.text);
 			}
 			
 			protected function getSessionResultHandler(e:ResultEvent):void
@@ -46,12 +48,14 @@
 				FlexGlobals.topLevelApplication.username.setVisible(true);
 				FlexGlobals.topLevelApplication.btnSearch.setVisible(true);
 				FlexGlobals.topLevelApplication.Account.visible=true;
+				this.visible = false;
 		
 			}
 			
 			protected function saveSessionResultHandler(e:ResultEvent):void
 			{
-				
+				var user:User = e.result as User;
+				Alert.show(user.lastName);
 			}
 			
 			protected function faultHandler(e:ResultEvent):void
@@ -61,9 +65,9 @@
 			
 			protected function loginresult_resultHandler(event:ResultEvent):void
 			{
-				var existUser:String = existUserResult.lastResult;
+				var existUser:Boolean = event.result;
 
-				if (existUser == "true") {
+				if (existUser) {
 					errorMessage.visible=false;
 					var ro:RemoteObject = new RemoteObject();
 					ro.destination = "userDAO";
@@ -71,7 +75,8 @@
 					ro.findUserByEmail(inputEmail.text);
 				}
 				else {
-					errorMessage.visible=true;
+					Alert.show(existUser.toString());
+					//errorMessage.visible=true;
 					inputPassword.text = "";
 				}
 			}
@@ -87,6 +92,17 @@
 				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
 				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
 				ro.getSessionAttribute('user');
+			}
+			
+			
+			
+			protected function inputPassword_keyDownHandler(event:KeyboardEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(event.keyCode == Keyboard.ENTER)
+				{
+					existUserResult.token = userDAO.existUser(inputPassword.text, inputEmail.text);
+				}
 			}
 			
 		]]>
@@ -108,7 +124,8 @@
 		</mx:FormItem>
 		<mx:FormItem width="451" label="Password" fontWeight="bold" paddingLeft="60" paddingTop="15">
 			<mx:TextInput id="inputPassword" width="281" height="30" displayAsPassword="true"
-						  fontFamily="Arial" fontSize="15" textAlign="left"/>
+						  fontFamily="Arial" fontSize="15"
+						  keyDown="inputPassword_keyDownHandler(event)" textAlign="left"/>
 		</mx:FormItem>
 		<mx:FormItem width="449" height="65" textAlign="center" paddingLeft="100" paddingTop="15">
 			<mx:Button id="button" width="112" height="45" label="Valider" chromeColor="#FF9C00"
