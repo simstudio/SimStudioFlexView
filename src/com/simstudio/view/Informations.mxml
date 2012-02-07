@@ -10,6 +10,7 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
 			import mx.rpc.events.ResultEvent;
 			import mx.rpc.remoting.RemoteObject;
 			
@@ -17,17 +18,16 @@
 			
 			public function init():void
 			{
-				this.addEventListener("UpdateDisplay", updateDisplayHandler);
-				var ro:RemoteObject = new RemoteObject();
-				ro.destination = "sessionDAO";
-				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
-				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
-				ro.getSessionAttribute('user');
+				FlexGlobals.topLevelApplication.addEventListener("refreshUser", updateDisplayHandler);
+//				var ro:RemoteObject = new RemoteObject();
+//				ro.destination = "sessionDAO";
+//				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
+//				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+//				ro.getSessionAttribute('user');
 			}
 			
 			public function updateDisplayHandler(e:Event):void
 			{
-				Alert.show('refresh');
 				var ro:RemoteObject = new RemoteObject();
 				ro.destination = "sessionDAO";
 				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
@@ -39,9 +39,12 @@
 			protected function getSessionResultHandler(e:ResultEvent):void
 			{
 				var user = e.result;
-				inputEmail.text = user.email;
-				inputFirstname.text = user.firstName;
-				inputLastname.text = user.lastName;
+				try{
+					inputEmail.text = user.email;
+					inputFirstname.text = user.firstName;
+					inputLastname.text = user.lastName;
+				}
+				catch(e:Error){Alert.show(e.toString())}
 			}
 			
 			protected function faultHandler():void
@@ -89,7 +92,8 @@
 					}
 					else
 					{
-						Alert.show("Modifications effectuées");
+						Alert.show("Informations saved");
+						FlexGlobals.topLevelApplication.username.text = "Bienvenue"+inputFirstname.text+" "+inputLastname.text;
 					}
 				}
 				catch(err:Error){

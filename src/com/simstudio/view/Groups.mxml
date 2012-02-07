@@ -37,7 +37,6 @@
 			
 			private var _newCanvas:Canvas;
 			
-			
 			/**
 			 * the instance of the edit popup showed
 			 */
@@ -63,7 +62,6 @@
 			
 			protected function processNextItem(groups:Array):void{
 				if(groups.length <= 0){
-					//fin process
 					//Alert.show("Groups empty");
 				}else{
 					try{
@@ -74,7 +72,6 @@
 						ro.removeEventListener("result",asyncProcessComplete)
 						var mess = e.result;
 						try{
-							//Alert.show(mess.content);
 							addGroup(item.id, item.name, mess);
 						}catch(err:Error)
 						{
@@ -87,7 +84,7 @@
 					ro.getLastGroupMessage(item.id);
 					}catch(err:Error)
 					{
-						Alert.show(err.message);
+						Alert.show('2 :'+err.message);
 					}
 					
 				}	
@@ -111,20 +108,19 @@
 			
 			private function getUserResultHandler(result:ResultEvent):void{
 				try{
-					var user:valueObjects.User = result.result as User;
+					var user = result.result;
 					//Alert.show(user.groups_2.getItemAt(1)+"");
 					var groups = user.groups_2.toArray();
+					
 					processNextItem(groups);
 					//var gr:Array;
-					
-				}catch(err:Error)
-				{
-					Alert.show(err.message);
 				}
-				
+				catch(err:Error){
+					Alert.show('1 :'+err.message);
+				}
 			}
 			
-			private function addGroup(id:int, name:String, mess:Object):void {
+			private function addGroup(id:int, name:String, mess):void {
 				var imageEdit:Image = new Image();
 				imageEdit.width=35;
 				imageEdit.height=34;
@@ -146,10 +142,14 @@
 				
 				var month:String="";
 				
-				if(mess.createdAt.month+1<10)
+				if(mess.id){
+				
+				if (mess.createdAt.month+1<10) {
 					month = "0"+(mess.createdAt.month+1);
-				else
+				}
+				else {
 					month=""+(mess.createdAt.month+1);
+				}
 				
 				var lastMessageLabel:Label = new Label();
 				lastMessageLabel.text = "Last post the "+mess.createdAt.date+"/"+month+"/"+mess.createdAt.fullYearUTC;
@@ -157,6 +157,17 @@
 				lastMessageLabel.setStyle("fontStyle", "italic");
 				lastMessageLabel.x = 500;
 				lastMessageLabel.y = 13;
+				
+				}
+				else
+				{
+					var lastMessageLabel:Label = new Label();
+					lastMessageLabel.text = "Aucun message";
+					lastMessageLabel.setStyle("fontSize", 12);
+					lastMessageLabel.setStyle("fontStyle", "italic");
+					lastMessageLabel.x = 500;
+					lastMessageLabel.y = 13;
+				}
 					
 				var myCanvas:Canvas = new Canvas();
 				myCanvas.setStyle("marginTop", "5");
@@ -181,9 +192,9 @@
 			}
 			
 			private function showGroup(e:Event):void {
-				//Alert.show(currentState);
-				Alert.show(currentState);
-				Alert.show(FlexGlobals.topLevelApplication.Account.currentState);
+//				//Alert.show(currentState);
+//				Alert.show(currentState);
+//				Alert.show(FlexGlobals.topLevelApplication.Account.currentState);
 			}
 			
 			private function HighlightBackground(e:Event):void {
@@ -324,6 +335,5 @@
 	<mx:HBox id="myHbox" x="5" y="10" width="1214" height="700" verticalAlign="top" direction="vertical" maxWidth="720" />
 
 	</mx:Canvas>
-	<s:Label id="groupLabel" x="6" y="14" fontFamily="Arial" fontSize="18" fontWeight="normal"
-			 text="My Groups"/>
+	<s:Label id="groupLabel" x="6" y="14" fontFamily="Arial" fontSize="18" fontWeight="normal" text="My Groups"/>
 </s:Group>

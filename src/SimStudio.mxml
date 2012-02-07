@@ -3,7 +3,7 @@
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
-			   xmlns:view="com.simstudio.view.*">
+			   xmlns:view="com.simstudio.view.*" initialize="init()">
 	<fx:Style source="SimStudio.css"/>
 
 	<fx:Script>
@@ -16,20 +16,63 @@
 			import mx.controls.Label;
 			import mx.controls.Menu;
 			import mx.controls.TextArea;
+			import mx.core.FlexGlobals;
 			import mx.core.IFlexDisplayObject;
 			import mx.events.MenuEvent;
 			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
 			
 			import spark.components.TitleWindow;
+			
+			import valueObjects.User;
+			
+			
+			protected function init():void{
+				
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				ro.getSessionAttribute.addEventListener("result", getUserResultHandler);	
+				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.getSessionAttribute('user');
+			}
 
-			// The event listener for the itemClick event.
+			protected function getUserResultHandler(result:ResultEvent):void
+			{
+				try{
+					var user = result.result;
+					
+					if (user.id.toString() != null ) {
+						logo.visible = false;
+						btnSubscription.visible = false;
+						btnLogin.visible = false;
+						Account.visible = true;
+						myMenuBar.visible = true;
+						btnSearch.visible = true;
+						btnLogout.visible = true;
+						username.visible = true;
+						username.text = user.firstName+" "+user.lastName;
+						FlexGlobals.topLevelApplication.dispatchEvent(new Event('refreshUser'));
+					}
+					else {
+						
+					}			
+				}
+				catch(err:Error){
+					
+				}
+			}
+			
+			protected function faultHandler():void
+			{
+				Alert.show('Oooops seems like an error occured')
+			}
+		
 			private function myMenuBar_itemClickInfo(event:MenuEvent):void {
-				//ta1.text="event.type: " + event.type;
-				//ta1.text+="\nevent.index: " + event.index;
-				//ta1.text+="\nItem label: " + event.item.@label
-				//ta1.text+="\nItem selected: " + event.item.@toggled;
-				//ta1.text+= "\nItem type: " + event.item.@type;
-				Alert.show("Texte dans une Alert", "Header de la boîte de dialogue");
+				if (event.label = "Manage account") {
+					this.Account.visible = true;
+					this.setStyle("backgroundColor","#666666");
+				}
 			}
 			
 			
@@ -52,28 +95,47 @@
 				PopUpManager.centerPopUp(pop);
 			}
 			
+			protected function btnLogout_clickHandler(event:MouseEvent):void
+			{
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				ro.saveSessionAttribute.addEventListener("result", saveSessionResultHandler);	
+				ro.saveSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.saveSessionAttribute('user', '');	
+			}
+			
+			protected function saveSessionResultHandler(e:ResultEvent):void
+			{
+				navigateToURL(new URLRequest(FlexGlobals.topLevelApplication.url), "_self")
+			}
+			
+			
+			
 		]]>
 	</fx:Script>
 	<fx:Style source="SimStudio.css"/>
 	<mx:MenuBar id="myMenuBar" x="1" y="4" width="100%" height="43" fontSize="14" fontWeight="bold"
-				itemClick="myMenuBar_itemClickInfo(event)" labelField="@label">
+				itemClick="myMenuBar_itemClickInfo(event)" labelField="@label" visible="false">
 		<fx:XMLList>
 			<menuitem label="Account">
-				<menuitem label="Profile"/>
-				<menuitem label="Manage Groups"/>
-				<menuitem label="Manages Models"/>
+				<menuitem label="Manage account"/>
 			</menuitem>
 		</fx:XMLList>
 	</mx:MenuBar>
-	<s:Button id="btnLogin" y="11" right="10" width="83" height="31" label="Login"
-			  click="btnLogin_clickHandler(event)" fontSize="14" fontWeight="bold"/>
-	<s:Button id="btnSubscription" y="11" right="101" width="110" height="31" label="Subscription"
-			  click="btnSubscription_clickHandler(event)" fontSize="14" fontWeight="bold"/>
-	<s:Button id="btnSearch" y="11" right="10" width="90" height="31" label="Search"
+	<s:Button id="btnLogin" width="95" height="51" label="Login" chromeColor="#DE9D00"
+			  click="btnLogin_clickHandler(event)" fontSize="14" fontWeight="bold"
+			  horizontalCenter="75" verticalCenter="29"/>
+	<s:Button id="btnSubscription" width="118" height="51" label="Subscription"
+			  click="btnSubscription_clickHandler(event)" fontSize="14" fontWeight="bold"
+			  horizontalCenter="-104" verticalCenter="29"/>
+	<s:Button id="btnSearch" y="11" right="110" width="90" height="31" label="Search"
 			  click="btnSearch_clickHandler(event)" visible="false" fontSize="14" fontWeight="bold"/>
+	<s:Button id="btnLogout" y="11" right="10" width="90" height="31" label="Logout"
+			  click="btnLogout_clickHandler(event)" visible="false" fontSize="14" fontWeight="bold"/>
 	
 	<view:Account id="Account" width="1265" height="612" visible="false"/>
-	<s:Label id="username" visible="false" y="20" right="150" width="235" fontFamily="Arial"
+	<s:Label id="username" visible="false" y="20" right="220" width="235" fontFamily="Arial"
 			 fontSize="12" fontWeight="bold" text="" textAlign="right" verticalAlign="bottom"/>
+	<s:Image id="logo" horizontalCenter="-22" verticalCenter="-148" source="@Embed(source='assets/logo.png')"/>
 	
 </s:Application>
