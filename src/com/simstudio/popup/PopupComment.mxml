@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:services="services.*"
+				width="496" height="294" close="closeHandler(event)" fontFamily="Arial"
+				showCloseButton="true" textAlign="right">
+	<mx:Script>
+		<![CDATA[
+			import com.simstudio.view.Informations;
+			
+			import flash.utils.flash_proxy;
+			
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.AsyncToken;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import valueObjects.User;
+			
+			private function closeHandler(event:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Move id="moveEffect" xFrom="-100"/>
+	
+	<mx:Form id="formLogin" width="485" height="249" textAlign="right">
+		<mx:FormHeading width="374" label="New comment" fontSize="15" textAlign="left"/>
+		<mx:TextArea width="450" height="112" textAlign="left" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+		
+		<mx:FormItem width="449" height="65" textAlign="center" paddingLeft="150" paddingTop="15">
+			<mx:Button id="button" width="112" height="45" label="Add" chromeColor="#FF9C00"
+					    color="#FFFFFF" enabled="true"
+					   focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+</mx:TitleWindow>

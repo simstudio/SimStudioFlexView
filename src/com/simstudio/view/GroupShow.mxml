@@ -1,13 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="902" height="688">
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="902" height="688" initialize="init()">
 	<fx:Declarations>
-		<!-- Placer ici les éléments non visuels (services et objets de valeur, par exemple). -->
+		<!-- Placer ici les éléments non visuels (services et objets de
+		valeur, par exemple). -->
 	</fx:Declarations>
 	<fx:Script>
+		<![CDATA[
+			import com.simstudio.popup.PopupComment;
+			
+			import flashx.textLayout.formats.TextAlign;
+			
+			import mx.containers.HBox;
+			import mx.controls.Alert;
+			import mx.controls.Button;
+			import mx.controls.Text;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import valueObjects.Group;
 		
+			protected function init():void
+			{
+				this.addEventListener("showGroup", refresh);
+				
+				this.groupLabel.text="Mon Group";
+				addMessages(5, 'Fabien Pomerol', 'orem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum urna dolor, congue vitae ultrices sed, tincidunt sed metus. Morbi vitae elit vel massa porttitor dignissim. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In orci tellus, rutrum in commodo at, placerat sit amet elit. Phasellus sit amet enim sem. Mauris aliquam accumsan est, id fermentum turpis tincidunt nec. Nullam pharetra tristique aliquet. Donec turpis magna, iaculis eu faucibus eu, pretium quis tellus. Phasellus volutpat lorem eget neque ornare ac dignissim mi interdum. Duis nec mollis sapien. Proin in ipsum nec eros elementum consectetur. Mauris fringilla tellus vel dui vestibulum ac porta purus vestibulum. Vivamus ac turpis urna. Duis vestibulum condimentum mauris, ut luctus quam');
+				addMessages(5, 'Fabien Pomerol', 'orem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum urna dolor, congue vitae ultrices sed, tincidunt sed metus. Morbi vitae elit vel massa porttitor dignissim. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In orci tellus, rutrum in commodo at, placerat sit amet elit. Phasellus sit amet enim sem. Mauris aliquam accumsan est, id fermentum turpis tincidunt nec. Nullam pharetra tristique aliquet. Donec turpis magna, iaculis eu faucibus eu, pretium quis tellus. Phasellus volutpat lorem eget neque ornare ac dignissim mi interdum. Duis nec mollis sapien. Proin in ipsum nec eros elementum consectetur. Mauris fringilla tellus vel dui vestibulum ac porta purus vestibulum. Vivamus ac turpis urna. Duis vestibulum condimentum mauris, ut luctus quam');
+				addMessages(5, 'Fabien Pomerol', 'orem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum urna dolor, congue vitae ultrices sed, tincidunt sed metus. Morbi vitae elit vel massa porttitor dignissim. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In orci tellus, rutrum in commodo at, placerat sit amet elit. Phasellus sit amet enim sem. Mauris aliquam accumsan est, id fermentum turpis tincidunt nec. Nullam pharetra tristique aliquet. Donec turpis magna, iaculis eu faucibus eu, pretium quis tellus. Phasellus volutpat lorem eget neque ornare ac dignissim mi interdum. Duis nec mollis sapien. Proin in ipsum nec eros elementum consectetur. Mauris fringilla tellus vel dui vestibulum ac porta purus vestibulum. Vivamus ac turpis urna. Duis vestibulum condimentum mauris, ut luctus quam');
+
+			}
+			
+			protected function refresh():void
+			{
+				var ro:RemoteObject = new RemoteObject();
+				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
+				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.getSessionAttribute('user');
+			}
+			
+			protected function getSessionResultHandler(e:ResultEvent):void
+			{
+				var group:valueObjects.Group = e.result as valueObjects.Group;
+				this.groupLabel.text=group.name;
+				//@todo process
+			}
+			
+			protected function faultHandler():void
+			{
+				Alert.show('Ooops! Seems like an error occured');
+			}
+			
+			private function addMessages(id:int, authorName:String, messageText:String):void {
+
+				var authorLabel:Label = new Label();
+				authorLabel.text = authorName;
+				authorLabel.setStyle("fontSize", 15);
+				authorLabel.setStyle("paddingTop", "10");
+				authorLabel.setStyle("left", "20");
+				authorLabel.setStyle("color", "#ffcb15");
+				
+				var createdAt:Label = new Label();
+				createdAt.text = "Monday 12 January  10:09";
+				createdAt.setStyle("fontSize", 12);
+				createdAt.setStyle("paddingTop", "10");
+				createdAt.setStyle("right", "20");
+				createdAt.setStyle("color", "#bfbfbf");
+
+				var message:Text = new Text();
+				message.text = messageText;
+				message.setStyle("fontSize", 12);
+				message.setStyle("fontWeight", "bold");
+				message.setStyle("paddingTop", "40");
+				message.setStyle("paddingBottom", "50");
+				message.setStyle('left', 40);
+				message.setStyle("textAlign", TextAlign.JUSTIFY);
+				message.width = 500;
+				
+				var commentBtn:Button = new Button();
+				commentBtn.label = "Add comment"
+				commentBtn.height = 20;
+				commentBtn.width = 100;
+				commentBtn.bottom = 10;
+				commentBtn.x = 40;
+				commentBtn.addEventListener(MouseEvent.CLICK, openPopUpComment);
+
+				var myCanvas:Canvas = new Canvas();
+				myCanvas.setStyle("marginTop", "5");
+				myCanvas.width=590;
+				myCanvas.name="message"+id;
+				myCanvas.addChild(commentBtn);
+				myCanvas.addChild(createdAt);
+				myCanvas.addChild(authorLabel);
+				myCanvas.addChild(message);
+
+
+				var myHbox:HBox = new HBox();
+				myHbox.width=590;
+				myHbox.name="Hbox"+id;
+				myHbox.addChild(myCanvas);
+				myVboxActu.addChild(myHbox);
+			}
+			
+			protected function openPopUpComment(e:Event):void
+			{
+				var pop:IFlexDisplayObject = PopUpManager.createPopUp(this, PopupComment, true);
+				PopUpManager.centerPopUp(pop);
+			}
+		]]>
+
 	</fx:Script>
-	<s:Label id="groupLabel" x="40" y="32" width="523" height="36" fontFamily="Arial" fontSize="18"
-			 text="Nom du groupe"/>
+	<s:Label id="groupLabel" x="40" y="32" width="523" height="36"
+			 fontFamily="Arial" fontSize="18"
+			 text="Nom du groupe" fontWeight="bold"/>
+
+	<s:Label id="groupLabel0" x="40" y="83" width="523" height="36"
+			 fontFamily="Arial" fontSize="16"
+			 text="Messages" fontWeight="bold"/>
+	
+	
+	<s:Label id="workLabel" x="677" y="83" width="202" height="36" fontFamily="Arial" fontSize="16"
+			 fontWeight="bold" text="Models"/>
+	<mx:VBox id="vboxTravaux" x="677" y="142" width="201" height="208"
+			 verticalAlign="top" direction="vertical" maxWidth="720" />
+	
+	<s:Label id="groupLabel3" x="677" y="372" width="203" height="36" fontFamily="Arial"
+			 fontSize="16" fontWeight="bold" text="Collaborators"/>
+	<mx:VBox id="vboxCollaborateurs" x="677" y="431" width="203"
+			 height="208" verticalAlign="top" direction="vertical" maxWidth="720"
+			 />
+	<s:Image x="40" y="107" width="500" source="assets/trait.png"/>
+	<s:Image x="679" y="107" width="200" source="assets/trait.png"/>
+	<s:Image x="677" y="397" width="200" source="assets/trait.png"/>
+	<s:Image x="130" y="107" width="500" source="assets/trait.png"/>
+	<mx:Canvas id="globalCanvasAsking" x="40" y="130" borderVisible="true" fontWeight="bold" maxHeight="600"  horizontalScrollPolicy="off">
+	<mx:VBox id="myVboxActu" width="610" height="800"
+			 verticalAlign="top" direction="vertical" maxWidth="720" clipContent="false" />	
+	</mx:Canvas>
+	
 </s:Group>

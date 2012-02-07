@@ -138,8 +138,10 @@
 				groupLabel.buttonMode=true;
 				groupLabel.addEventListener(MouseEvent.MOUSE_OVER, HighlightGroupLink);
 				groupLabel.addEventListener(MouseEvent.MOUSE_OUT, DarkenGroupLink);
-				groupLabel.addEventListener(MouseEvent.CLICK, showGroup);
-				
+				groupLabel.addEventListener(MouseEvent.CLICK, function groupResult(e:Event):void{
+					showGroup(e, id);
+				});
+
 				var month:String="";
 				
 				if(mess.id){
@@ -191,10 +193,18 @@
 				myVbox.addChild(myHbox);
 			}
 			
-			private function showGroup(e:Event):void {
-//				//Alert.show(currentState);
-//				Alert.show(currentState);
-//				Alert.show(FlexGlobals.topLevelApplication.Account.currentState);
+			private function showGroup(e:Event, i:int):void {
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				ro.saveSessionAttribute.addEventListener("result", saveSessionResultHandler);	
+				ro.saveSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.saveSessionAttribute('groupShow', i);
+				
+				FlexGlobals.topLevelApplication.Account.currentState = "group_view";
+			}
+			
+			protected function saveSessionResultHandler(e:ResultEvent):void {
+				
 			}
 			
 			private function HighlightBackground(e:Event):void {
