@@ -10,10 +10,12 @@
 			import mx.containers.HBox;
 			import mx.controls.Alert;
 			import mx.controls.Button;
+			import mx.core.FlexGlobals;
 			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
 			
 			import valueObjects.User;
 			
@@ -24,12 +26,35 @@
 			
 			private var activeButtonName:String;
 			
+			public var id_session:int;
+			
 			private function closeHandler(event:CloseEvent):void
 			{
 				PopUpManager.removePopUp(this);
 			}
 			
 			private function init():void{
+				
+				var ro:RemoteObject = new RemoteObject();
+				ro.destination = "sessionDAO";
+				ro.getSessionAttribute.addEventListener("result", getSessionResultHandler);	
+				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+				ro.getSessionAttribute('user');
+			}
+			
+			
+			
+			public function getSessionResultHandler(e:ResultEvent):void
+			{
+				var user:User = e.result as User;
+				//FlexGlobals.topLevelApplication.username.text = "Bienvenue "+user.id+" "+user.id;
+				id_session = user.id;
+				
+			}
+			
+			protected function faultHandler():void
+			{
+				Alert.show('Oops !! An error occurred getting your personnals informations');
 			}
 			
 			private function resultHandler(result:ResultEvent):void {
@@ -82,7 +107,7 @@
 				myCanvas.setStyle("backgroundColor", "#989898");
 				
 				this.activeButton = new Button();
-				this.activeButton.label = 'Ask invitation';
+				this.activeButton.label = "Ask invitation";
 				//this.activeButton.id = id.toString();
 				this.activeButton.width=130;
 				this.activeButton.height=20;
@@ -90,10 +115,9 @@
 				this.activeButton.x=460;
 				this.activeButton.setStyle("color", "#26afbc");
 				this.activeButton.setStyle("textRollOverColor", "#26afbc");
-				this.activeButton.addEventListener(MouseEvent.CLICK, function askUserToCollaborator(e:Event):void { 
-				getResult.token = userDAO.askUserToCollaborator(5,6); 
-				Alert.show("user asked");
-
+				this.activeButton.addEventListener(MouseEvent.CLICK,function askUserToCollaborator(e:Event):void { 
+				getResult.token = userDAO.askUserToCollaborator(id_session,id); 
+				this.visible = false;
 				});
 				
 				
