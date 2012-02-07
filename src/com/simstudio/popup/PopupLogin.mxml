@@ -47,15 +47,18 @@
 				FlexGlobals.topLevelApplication.username.text = "Bienvenue "+user.firstName+" "+user.lastName;
 				FlexGlobals.topLevelApplication.username.setVisible(true);
 				FlexGlobals.topLevelApplication.btnSearch.setVisible(true);
-				FlexGlobals.topLevelApplication.Account.visible=true;
+			//	FlexGlobals.topLevelApplication.Account.visible=true;
+				FlexGlobals.topLevelApplication.dispatchEvent(new Event("refreshUser"));
+				FlexGlobals.topLevelApplication.logo.visible = false;
+				FlexGlobals.topLevelApplication.btnLogout.visible = true;
+				FlexGlobals.topLevelApplication.myMenuBar.visible = true;
+				FlexGlobals.topLevelApplication.setStyle("backgroundColor", "#ffffff");
 				this.visible = false;
-		
 			}
 			
 			protected function saveSessionResultHandler(e:ResultEvent):void
 			{
-				var user:User = e.result as User;
-				Alert.show(user.lastName);
+//				var user:User = e.result as User;
 			}
 			
 			protected function faultHandler(e:ResultEvent):void
@@ -94,11 +97,8 @@
 				ro.getSessionAttribute('user');
 			}
 			
-			
-			
 			protected function inputPassword_keyDownHandler(event:KeyboardEvent):void
 			{
-				// TODO Auto-generated method stub
 				if(event.keyCode == Keyboard.ENTER)
 				{
 					existUserResult.token = userDAO.existUser(inputPassword.text, inputEmail.text);

@@ -55,6 +55,11 @@
 				myImage.removeEventListener(MouseEvent.ROLL_OVER, showMenu);
 			}
 			
+			protected function refresh(type:String){
+				//@todo propagate refresh in the application
+//				if(type == "" )
+			}
+			
 		]]>
 	</fx:Script>
 	<s:states> 
@@ -72,7 +77,7 @@
 	
 	<!-- Collaborator -->
 	<s:Image id="collaboratorActive" x="145" y="238" useHandCursor="true" buttonMode="true" source="@Embed(source='assets/account_icone_collaborateurs_on.png')" 
-			 rollOut="hideMenu('collaboratorActive', 'collaboratorMove')" rollOver="showMenu('collaboratorActive', 'collaboratorMove')" click="currentState='collaborator'"/>
+			 rollOut="hideMenu('collaboratorActive', 'collaboratorMove')" rollOver="showMenu('collaboratorActive', 'collaboratorMove')"  click="currentState='collaborator'"/>
 
 	
 	<!-- Groups -->

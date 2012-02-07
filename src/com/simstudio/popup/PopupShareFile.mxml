@@ -25,6 +25,8 @@
 			
 			private var activeButtonName:String;
 			
+			//private var search_icon:Image = 
+			
 			private function closeHandler(event:CloseEvent):void
 			{
 				PopUpManager.removePopUp(this);

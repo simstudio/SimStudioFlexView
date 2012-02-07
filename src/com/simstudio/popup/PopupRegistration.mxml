@@ -146,12 +146,17 @@
 		<mx:Form width="517" height="437" fontFamily="Arial" textAlign="left">
 			<mx:FormHeading width="303" height="41" label="Inscrivez vous" fontSize="15"
 							fontStyle="normal" paddingTop="10" textDecoration="none"/>
-			<mx:FormItem height="76" label="Email" color="#FFFFFF" fontWeight="bold" paddingLeft="60"
+			<mx:FormItem height="40" label="Username" color="#FFFFFF" fontWeight="bold" paddingLeft="60"
 						 paddingTop="10" textAlign="left">
-				<mx:TextInput id="inputEmail" width="294" height="30" dropShadowVisible="true"
-							  focusOut="checkEmail(event)" fontSize="15" paddingBottom="5"/>
 				<mx:TextInput id="inputUsername" width="294" height="30" dropShadowVisible="true"/>
 			</mx:FormItem>
+			
+			<mx:FormItem height="40" label="Email" color="#FFFFFF" fontWeight="bold" paddingLeft="60"
+			paddingTop="10" textAlign="left">
+			<mx:TextInput id="inputEmail" width="294" height="30" dropShadowVisible="true"
+						  focusOut="checkEmail(event)" fontSize="15" paddingBottom="5"/>
+			</mx:FormItem>
+			
 			<mx:FormItem label="Firstname" fontWeight="bold" paddingLeft="60"
 						 paddingTop="15">
 				<mx:TextInput id="inputFirstname" width="294" height="30" fontFamily="Arial"
@@ -170,7 +175,7 @@
 				<mx:TextInput id="inputPasswordRepeated" width="294" height="30" focusOut="checkPassword(event)"
 							  displayAsPassword="true" fontFamily="Arial" fontSize="15"/>
 			</mx:FormItem>
-			<mx:FormItem width="464" height="95" textAlign="center" paddingLeft="100" paddingTop="40">
+			<mx:FormItem width="464" height="90" textAlign="center" paddingLeft="100" paddingTop="40">
 				<mx:Button id="button" width="112" height="45" label="Valider" chromeColor="#FF9C00"
 						   click="button_clickHandler(event)" color="#FFFFFF" enabled="true"
 						   focusColor="#FFF5F5" fontSize="16" fontWeight="bold"/>

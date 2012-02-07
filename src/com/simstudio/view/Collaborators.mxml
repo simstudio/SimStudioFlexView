@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="770" height="594">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" initialize="init()" width="1254" height="556">
 	<fx:Declarations>
 		<!-- Placer ici les éléments non visuels (services et objets de valeur, par exemple). -->
 	</fx:Declarations>
@@ -9,19 +9,383 @@
 		<![CDATA[
 			import com.simstudio.popup.PopupSearchCollaborator;
 			
+			import mx.containers.Canvas;
+			import mx.containers.HBox;
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.core.FlexGlobals;
 			import mx.core.IFlexDisplayObject;
 			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.RemoteObject;
+			
+			import valueObjects.User;
+		
+			private var _newCanvas:Canvas;
+			
+			/**
+			 * the instance of the edit popup showed
+			 */
+			private var _openEditPopUp:Canvas;
+			
+			/**
+			 * the instance of the edit popup showed
+			 */
+			private var _lastOpenedEditButton:Image;
+			
+			private var _imgEditOver:String = "assets/edit_black.png";
+			private var _imgEditOut:String = "assets/edit_white.png";
+			
+			private var _imgRemoveWhite:String = "assets/cross_blanc.png";
+			private var _imgRemoveRed:String = "assets/cross_rouge.png";
+			private var _imgCheckWhite:String = "assets/check_blanc.png";
+			private var _imgCheckGreen:String = "assets/check_vert.png";
+			
+			private function init():void{
+				//@todo refactored
+//				var ro:RemoteObject = new RemoteObject();
+//				ro.destination = "sessionDAO";
+//				
+//				ro.getSessionAttribute.addEventListener("result", getUserResultHandler);	
+//				ro.getSessionAttribute.addEventListener("fault", faultHandler);	
+//				ro.getSessionAttribute('user');
+				
+				addCollaborator(1, 'Jean bon');
+				addCollaborator(2, 'Jean Ondfd');
+				addCollaborator(3, 'Jean bon2');
+				addCollaborator(4, 'Jean bon3');
+				addCollaborator(5, 'Jean bon4');
+				addCollaborator(6, 'Jean bon5');
+				addCollaboratorAsking(5, 'Coco Shaker1');
+				addCollaboratorAsking(6, 'Coco Shaker2');
+				addCollaboratorAsking(7, 'Coco Shaker3');
+			}
 			
 			protected function btnFindCollaborator_clickHandler(event:MouseEvent):void
 			{
 				var pop:IFlexDisplayObject = PopUpManager.createPopUp(this, PopupSearchCollaborator, true);
 				PopUpManager.centerPopUp(pop);
+			}
+			
+			protected function processNextItem(groups:Array):void{
+				if(groups.length <= 0){
+					//Alert.show("Groups empty");
+				}else{
+					try{
+						var item:Object = groups.pop();
+						var ro:RemoteObject = new RemoteObject;
+						ro.destination = "groupDAO";
+						function asyncProcessComplete(e:ResultEvent):void{
+							ro.removeEventListener("result",asyncProcessComplete)
+							var mess = e.result;
+							try{
+								addCollaborator(item.id, item.name);
+							}catch(err:Error)
+							{
+								Alert.show("Erreur pour addGroup : "+item.name+" "+err.message);
+							}
+							processNextItem(groups);
+						}
+						ro.getLastGroupMessage.addEventListener("result",asyncProcessComplete);
+						ro.getLastGroupMessage.addEventListener("fault", faultHandler);
+						ro.getLastGroupMessage(item.id);
+					}catch(err:Error)
+					{
+						Alert.show(err.message);
+					}
+					
+				}	
+			}
+			
+			protected function faultHandler(e:ResultEvent):void
+			{
+				Alert.show('Ooops!! It seem that you have an asyncprocess error.');
+			}
+			
+			private function getUserResultHandler(result:ResultEvent):void{
 				
+				try{
+					var user:valueObjects.User = result.result as User;
+					//Alert.show(user.groups_2.getItemAt(1)+"");
+					var groups = user.groups_2.toArray();
+					
+					processNextItem(groups);
+					//var gr:Array;
+					
+				}
+				catch(err:Error){
+					Alert.show(err.message);
+				}
+				
+			}
+			
+			private function addCollaborator(id:int, name:String):void {
+				var imageEdit:Image = new Image();
+				imageEdit.width=35;
+				imageEdit.height=34;
+				imageEdit.name=id.toString();
+				imageEdit.load(this._imgEditOut);
+				imageEdit.buttonMode=true;
+				imageEdit.addEventListener(MouseEvent.CLICK, OpenEditPopUp);
+				
+				var groupLabel:Label = new Label();
+				groupLabel.text = name;
+				groupLabel.setStyle("fontSize", 12);
+				groupLabel.setStyle("fontWeight", "bold");
+				groupLabel.x = 50;
+				groupLabel.y = 13;
+				groupLabel.buttonMode=true;
+				groupLabel.addEventListener(MouseEvent.MOUSE_OVER, HighlightGroupLink);
+				groupLabel.addEventListener(MouseEvent.MOUSE_OUT, DarkenGroupLink);
+				groupLabel.addEventListener(MouseEvent.CLICK, showGroup);
+				
+				var myCanvas:Canvas = new Canvas();
+				myCanvas.setStyle("marginTop", "5");
+				myCanvas.setStyle("backgroundColor", "#707070");
+				
+				myCanvas.setStyle("y", 25);
+				myCanvas.width=720;
+				myCanvas.height=35;
+				myCanvas.name="name"+id;
+				myCanvas.addChild(imageEdit);
+				myCanvas.addChild(groupLabel);
+
+				myCanvas.addEventListener(MouseEvent.MOUSE_OVER, HighlightBackground);
+				myCanvas.addEventListener(MouseEvent.MOUSE_OUT, DarkenBackground);
+				
+				var myHbox:HBox = new HBox();
+				myHbox.width=720;
+				myHbox.height=35;
+				myHbox.name="Hbox"+id;
+				myHbox.addChild(myCanvas);
+				myVboxCollaborator.addChild(myHbox);
+			}
+			
+			private function addCollaboratorAsking(id:int, name:String):void {
+				
+				var groupLabel:Label = new Label();
+				groupLabel.text = name;
+				groupLabel.name="label";
+				groupLabel.setStyle("fontSize", 12);
+				groupLabel.setStyle("fontWeight", "bold");
+				groupLabel.x = 20;
+				groupLabel.y = 13;
+				
+				var btnCheck:Image = new Image();
+				btnCheck.width=35;
+				btnCheck.height=35;
+				btnCheck.x=220;
+				btnCheck.y=2;
+				btnCheck.name=id.toString();
+				btnCheck.load(this._imgCheckWhite);
+				btnCheck.buttonMode=true;
+				btnCheck.addEventListener(MouseEvent.CLICK, AcceptInvitation);
+				
+				var btnRemove:Image = new Image();
+				btnRemove.width=24;
+				btnRemove.height=24;
+				btnRemove.x=260;
+				btnRemove.y=5;
+				btnRemove.name=id.toString();
+				btnRemove.load(this._imgRemoveWhite);
+				btnRemove.buttonMode=true;
+				btnRemove.addEventListener(MouseEvent.CLICK, RejectInvitation);
+				
+				
+				var myCanvas:Canvas = new Canvas();
+				myCanvas.setStyle("marginTop", "5");
+				myCanvas.setStyle("backgroundColor", "#a1c45e");
+				myCanvas.setStyle("borderColor", "#4e681d")
+				
+				myCanvas.setStyle("y", 25);
+				myCanvas.width=300;
+				myCanvas.height=37;
+				myCanvas.name="nameAsking"+id;
+				myCanvas.addChild(groupLabel);
+				myCanvas.addChild(btnCheck);
+				myCanvas.addChild(btnRemove);
+				
+				myCanvas.addEventListener(MouseEvent.MOUSE_OVER, HighlightBackgroundInvit);
+				myCanvas.addEventListener(MouseEvent.MOUSE_OUT, DarkenBackgroundInvit);
+				
+				var myHbox:HBox = new HBox();
+				myHbox.width=720;
+				myHbox.height=37;
+				myHbox.name="HboxAsking"+id;
+				myHbox.addChild(myCanvas);
+				myVboxAsking.addChild(myHbox);
+			}
+			
+			private function AcceptInvitation(e:Event):void
+			{
+				Alert.show('todo accept invitation');
+			}
+			
+			private function RejectInvitation(e:Event):void
+			{
+				Alert.show('todo reject invitation');
+			}
+			
+			private function HighlightBackgroundInvit(e:Event):void {
+				var myCanvas:Canvas = e.currentTarget as Canvas;
+				myCanvas.setStyle("backgroundColor", "#b9d680");
+				var label:Label = myCanvas.getChildByName("label") as Label;
+				label.setStyle("color", "#000000");
+			}
+			
+			private function DarkenBackgroundInvit(e:Event):void {
+				var myCanvas:Canvas = e.currentTarget as Canvas;
+				myCanvas.setStyle("backgroundColor", "#a1c45e");
+				var label:Label = myCanvas.getChildByName("label") as Label;
+				label.setStyle("color", "#ffffff");
+			}
+			
+			private function showGroup(e:Event):void {
+				//Alert.show(currentState);
+				Alert.show(currentState);
+				Alert.show(FlexGlobals.topLevelApplication.Account.currentState);
+			}
+			
+			private function HighlightBackground(e:Event):void {
+				var myCanvas:Canvas = e.currentTarget as Canvas;
+				myCanvas.setStyle("backgroundColor", "#989898");
+			}
+			
+			private function DarkenBackground(e:Event):void {
+				var myCanvas:Canvas = e.currentTarget as Canvas;
+				myCanvas.setStyle("backgroundColor", "#707070");
+			}
+			
+			private function OpenGroup(e:Event):void {
+				Alert.show("todo link to the group");
+			}
+			
+			private function HighlightGroupLink(e:Event):void {
+				var link:Label = e.currentTarget as Label;
+				link.setStyle("color", "#333333");
+			}
+			
+			private function DarkenGroupLink(e:Event):void {
+				var link:Label = e.currentTarget as Label;
+				link.setStyle("color", "#ffffff");
+			}
+			
+			/**
+			 * Open the edit popup and close 
+			 */
+			private function OpenEditPopUp(e:Event):void {
+				var editBtn:Image = e.currentTarget as Image;
+				
+				if(_lastOpenedEditButton == null){
+					_lastOpenedEditButton = editBtn;
+				}
+				else {
+					_lastOpenedEditButton.load(_imgEditOut)
+					_lastOpenedEditButton = editBtn;
+				}
+				
+				if(_openEditPopUp == null)
+				{
+					editBtn.load(_imgEditOver);
+					configureEditPopUP(editBtn);
+					this['globalCanvasCollaborator'].addChild(_openEditPopUp);
+				}
+				else {
+					this['globalCanvasCollaborator'].removeChild(_openEditPopUp);
+					_openEditPopUp = null;
+					editBtn.load(_imgEditOut);
+				}
+			}
+			
+			private function CloseEditPopUp():void {
+				this['globalCanvasCollaborator'].removeChild(_openEditPopUp);
+				_openEditPopUp = null;
+			}
+			
+			
+			/**
+			 * @todo refactored to show admin only when the user is the group admin
+			 * Configure the edit popup with right submenu
+			 */
+			private function configureEditPopUP(editBtn:Image):void {
+				
+				_openEditPopUp = new Canvas();
+				_openEditPopUp.width=130;
+				_openEditPopUp.height=70;
+				_openEditPopUp.setStyle("backgroundColor", "#f0eded");
+				_openEditPopUp.x=0;
+				_openEditPopUp.y=editBtn.parent.parent.y+34;
+				
+				var quitGroupMenu:Label = new Label();
+				quitGroupMenu.width=130;
+				quitGroupMenu.height=25;
+				quitGroupMenu.text="Delete";
+				quitGroupMenu.setStyle("textAlign", "center");
+				quitGroupMenu.setStyle("color", "#000000");
+				quitGroupMenu.setStyle("fontWeight", "bold");
+				quitGroupMenu.setStyle("verticalAlign", "middle");
+				quitGroupMenu.y=10;
+				quitGroupMenu.buttonMode=true;
+				quitGroupMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
+				quitGroupMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
+				quitGroupMenu.addEventListener(MouseEvent.CLICK, function test(e:Event):void{
+					leaveGroupAction(e, editBtn.name);
+				});
+				
+				var adminGroupMenu:Label = new Label();
+				adminGroupMenu.width=130;
+				adminGroupMenu.height=25;
+				adminGroupMenu.text="Admin the group";
+				adminGroupMenu.setStyle("textAlign", "center");
+				adminGroupMenu.setStyle("color", "#000000");
+				adminGroupMenu.setStyle("fontWeight", "bold");
+				adminGroupMenu.setStyle("verticalAlign", "middle");
+				adminGroupMenu.y=35;
+				adminGroupMenu.buttonMode=true;
+				adminGroupMenu.addEventListener(MouseEvent.MOUSE_OVER, HighlightMenuLabelBackground);
+				adminGroupMenu.addEventListener(MouseEvent.MOUSE_OUT, DarkenMenuLabelBackground);
+				adminGroupMenu.addEventListener(MouseEvent.CLICK, function test(e:Event):void{
+					leaveGroupAction(e, editBtn.name);
+				});
+				
+				_openEditPopUp.addChild(quitGroupMenu);
+				_openEditPopUp.addChild(adminGroupMenu);
+			}
+			
+			
+			private function HighlightMenuLabelBackground(e:Event):void {
+				var link:Label = e.currentTarget as spark.components.Label;
+				link.setStyle("backgroundColor", "#f09620");
+				link.setStyle("color", "#ffffff");
+			}
+			
+			private function leaveGroupAction(e:Event, id:String):void {
+//				var vbox:VBox = this['myVboxCollaborator'];
+				var hbox:HBox = myVboxCollaborator.getChildByName("Hbox"+id) as HBox;
+				Alert.show(hbox.toString());
+				hbox.removeAllChildren();
+				CloseEditPopUp();
+			}
+			
+			/**
+			 * Remove highlight on the popup menu on mouse over
+			 */
+			private function DarkenMenuLabelBackground(e:Event):void {
+				var link:Label = e.currentTarget as Label;
+				link.setStyle("backgroundColor", "#f0eded");
+				link.setStyle("color", "#000000");
 			}
 		]]>
 	</fx:Script>
-	<mx:Button id="btnUpload" x="438" y="30" width="171" height="30" label="Find collaborators"
+	<mx:Button id="btnUpload" x="555" y="10" width="171" height="30" label="Find collaborators"
 			   color="#FFFFFF" fontSize="15" fontWeight="bold"
 			   textRollOverColor="#ffb400" click="btnFindCollaborator_clickHandler(event)"/>
-	<s:Label x="10" y="43" fontFamily="Arial" fontSize="18" fontWeight="normal" text="My Collaborators"/>
+	<s:Label x="6" y="14" fontFamily="Arial" fontSize="18" fontWeight="normal" text="My Collaborators"/>
+	<s:Label x="800" y="14" fontFamily="Arial" fontSize="18" fontWeight="normal" text="Invitations"/>
+	<mx:Canvas id="globalCanvasAsking" x="800" y="46" borderVisible="true">
+		<mx:VBox id="myVboxAsking" x="5" y="10" width="300" height="700" verticalAlign="top" direction="vertical" maxWidth="300" />
+	</mx:Canvas>
+	<mx:Canvas id="globalCanvasCollaborator" x="6" y="46">
+		<mx:VBox id="myVboxCollaborator" x="5" y="10" width="720" height="700" verticalAlign="top" direction="vertical" maxWidth="720" />
+	</mx:Canvas>
 </s:Group>
